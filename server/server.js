@@ -267,7 +267,7 @@ app.get('*', function(req, res) {
 });
 
 
-server.listen(port, '0.0.0.0', (err) => {
+server.listen(port, (err) => {
     if (err) {
         console.log(err);
     }

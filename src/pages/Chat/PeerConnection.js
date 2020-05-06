@@ -20,7 +20,6 @@ class PeerConnection extends Emitter {
 
         this.mediaDevice = new MediaDevice();
         this.friendID = friendID;
-        console.log("this is peerconnection", friendID);
     }
 
     /**
