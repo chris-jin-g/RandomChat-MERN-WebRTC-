@@ -1,8 +1,7 @@
 {
     "name": "your-app",
-    "version": "0.1.0",
+    "version": "1.0.0",
     "private": true,
-    "// If You want to install mdbreact from our GitLab repository, please replace '4.25.6' with gitURL provided here ->": "git+https://oauth2:<YOUR-TOKEN-GOES-HERE>@git.mdbootstrap.com/mdb/react/re-pro.git",
     "dependencies": {
         "@fortawesome/fontawesome-svg-core": "^1.2.28",
         "@fortawesome/free-solid-svg-icons": "^5.13.0",
@@ -50,6 +49,10 @@
         "dotenv": "^8.2.0",
         "renamer": "^1.0.0",
         "rimraf": "^2.7.1"
+    },
+    "engines": {
+        "node": "12.15.0",
+        "yarn": "1.22.0"
     },
     "browserslist": [
         ">0.2%",
