@@ -44,12 +44,7 @@
     },
     "scripts": {
         "start": "node server/server.js",
-        "client": "react-scripts start",
-        "build": "react-scripts build",
-        "test": "react-scripts test --env=jsdom",
-        "eject": "react-scripts eject",
-        "rename": "renamer --find App-clear.js --replace App.js ./src/App-clear.js && renamer --find style.css --replace index.css ./src/style.css ",
-        "remove-demo": "rimraf ./src/assets ./src/components ./src/pages ./src/Routes.js ./src/App.js ./src/index.css && npm run rename"
+        "client": "react-scripts start"
     },
     "devDependencies": {
         "dotenv": "^8.2.0",
