@@ -51,7 +51,7 @@
         "rimraf": "^2.7.1"
     },
     "engines": {
-        "node": "12.15.0",
+        "node": "12.8.1",
         "yarn": "1.22.0"
     },
     "browserslist": [
