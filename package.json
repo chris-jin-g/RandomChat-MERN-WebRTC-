@@ -43,9 +43,7 @@
         "whatwg-fetch": "^2.0.4"
     },
     "scripts": {
-        // "start": "react-scripts start",
-        // "server": "nodemon server/server",
-        "start": "node server/server",
+        "start": "node server/server.js",
         "client": "react-scripts start",
         "build": "react-scripts build",
         "test": "react-scripts test --env=jsdom",
