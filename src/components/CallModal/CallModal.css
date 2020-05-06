@@ -1,0 +1,69 @@
+.call-modal {
+    position: absolute;
+    width: 400px;
+    padding: 20px;
+    left: calc(50vw - 200px);
+    top: calc(50vh - 60px);
+    background: -webkit-linear-gradient(top, #074055 0%, #030D10 100%);
+    background: -moz-linear-gradient(top, #074055 0%, #030D10 100%);
+    background: -o-linear-gradient(top, #074055 0%, #030D10 100%);
+    background: linear-gradient(top, #074055 0%, #030D10 100%);
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    -o-border-radius: 5px;
+    border-radius: 5px;
+    text-align: center;
+    display: none;
+}
+
+.call-modal.active {
+    display: block;
+    z-index: 9999;
+    -webkit-animation: blinking 3s infinite linear;
+    -moz-animation: blinking 3s infinite linear;
+    -o-animation: blinking 3s infinite linear;
+    animation: blinking 3s infinite linear;
+}
+
+.video-control .btn-action,
+.call-modal .btn-action {
+    height: 50px;
+    width: 50px;
+    line-height: 50px;
+    margin: 0px 8px;
+    font-size: 1.4em;
+    text-align: center;
+    border-radius: 50%;
+    cursor: pointer;
+    transition-duration: 0.25s;
+}
+
+.btn-action {
+    outline: none;
+    border: none;
+}
+
+.call-modal p {
+    font-size: 1.5em;
+}
+
+.call-modal span.caller {
+    color: #00AFF0;
+}
+
+.call-modal .btn-action:not(.hangup) {
+    background-color: #7FBA00;
+}
+
+.video-control .btn-action,
+.call-modal .btn-action {
+    height: 50px;
+    width: 50px;
+    line-height: 50px;
+    margin: 0px 8px;
+    font-size: 1.4em;
+    text-align: center;
+    border-radius: 50%;
+    cursor: pointer;
+    transition-duration: 0.25s;
+}

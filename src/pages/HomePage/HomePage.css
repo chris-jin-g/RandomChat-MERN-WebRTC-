@@ -1,0 +1,13 @@
+strong h2 {
+    font-size: 35px;
+    font-weight: 500;
+}
+
+.navbar-title {
+    font-size: 25px;
+    font-weight: 500;
+}
+
+.btn-group a {
+    display: inline-block;
+}

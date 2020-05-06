@@ -1,0 +1,56 @@
+.search-container {
+    position: fixed;
+    margin: 0px;
+    top: 74px;
+    right: -15px;
+    width: 350px;
+    height: 100%;
+    animation-name: search-container;
+    animation-duration: 0.5s;
+}
+
+@keyframes search-container {
+    0% {
+        right: -400px
+    }
+    100% {
+        right: -15px;
+    }
+}
+
+.search-container-hide {
+    position: fixed;
+    margin: 0px;
+    top: 74px;
+    right: -400px;
+    width: 350px;
+    height: 100%;
+    animation-name: search-container-hide;
+    animation-duration: 0.5s;
+}
+
+@keyframes search-container-hide {
+    0% {
+        right: -15px
+    }
+    100% {
+        right: -400px;
+    }
+}
+
+.jumbotron {
+    padding: 20px 5px 0px 5px;
+    height: calc( 100vh - 160px);
+}
+
+.form-label {
+    margin: 10px 0px;
+}
+
+.form-group {
+    border: none !important;
+}
+
+.card-title {
+    margin-top: 20px;
+}
