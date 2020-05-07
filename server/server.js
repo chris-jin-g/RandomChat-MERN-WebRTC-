@@ -23,24 +23,26 @@ mongoose.connect(config.db, { useNewUrlParser: true, useUnifiedTopology: true })
 mongoose.Promise = global.Promise;
 
 const app = express();
-var server = require("http").Server(app);
+var server = require("http").createServer(app);
 const io = require("socket.io")(server);
 
 // app.use(express.urlencoded({ extended: true }));
 // app.use(express.json());
-app.use(logger('dev'));
-app.use(cors());
+// app.use(logger('dev'));
+// app.use(cors());
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use(fileUpload());
-app.use('/public', express.static('public'));
+// app.use(bodyParser.json());
+// app.use(bodyParser.urlencoded({ extended: false }));
+// app.use(cookieParser());
+// app.use(fileUpload());
 
-app.use('/', express.static(path.resolve(__dirname, '../build')));
+// app.use('/public', express.static('public'));
 
-app.get('*', function(req, res) {
-    console.log("Server Start $$$$");
+app.use('/', express.static(`${__dirname}/../build`));
+
+app.get('*', (req, res) => {
+    // eslint-disable-next-line no-undef
+    console.log("Server Start 44##$$")
     res.sendFile(path.resolve(__dirname, '../build/index.html'));
     res.end();
 });
