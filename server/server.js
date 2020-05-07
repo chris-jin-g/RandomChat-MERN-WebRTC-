@@ -1,26 +1,26 @@
 const express = require('express');
-// const fs = require('fs');
+const fs = require('fs');
 
-// const mongoose = require('mongoose');
+const mongoose = require('mongoose');
 const path = require('path');
 
 
-// const logger = require('morgan');
-// const cookieParser = require('cookie-parser');
-// const bodyParser = require('body-parser');
-// const fileUpload = require('express-fileupload');
+const logger = require('morgan');
+const cookieParser = require('cookie-parser');
+const bodyParser = require('body-parser');
+const fileUpload = require('express-fileupload');
 
 const config = require('./config/config');
 const User = require('./models/User');
 const port = config.RESTAPIport;
 console.log("socket port config defined");
-// const cors = require('cors');
+const cors = require('cors');
 
 // Configuration
 // ================================================================================================
 
 // Set up Mongoose
-// mongoose.connect(config.db, { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect(config.db, { useNewUrlParser: true, useUnifiedTopology: true });
 // mongoose.Promise = global.Promise;
 
 const app = express();
@@ -28,15 +28,15 @@ const server = require("http").createServer(app);
 const io = require("socket.io")(server);
 console.log("socket io imported");
 
-// app.use(express.urlencoded({ extended: true }));
-// app.use(express.json());
-// app.use(logger('dev'));
-// app.use(cors());
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+app.use(logger('dev'));
+app.use(cors());
 
-// app.use(bodyParser.json());
-// app.use(bodyParser.urlencoded({ extended: false }));
-// app.use(cookieParser());
-// app.use(fileUpload());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(cookieParser());
+app.use(fileUpload());
 
 // app.use('/public', express.static('public'));
 
