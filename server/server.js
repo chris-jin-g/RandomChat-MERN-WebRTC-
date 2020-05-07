@@ -20,11 +20,11 @@ const cors = require('cors');
 
 // Set up Mongoose
 mongoose.connect(config.db, { useNewUrlParser: true, useUnifiedTopology: true });
-mongoose.Promise = global.Promise;
+// mongoose.Promise = global.Promise;
 
 const app = express();
 var server = require("http").createServer(app);
-// const io = require("socket.io")(server);
+const io = require("socket.io")(server);
 
 // app.use(express.urlencoded({ extended: true }));
 // app.use(express.json());
@@ -267,7 +267,7 @@ app.get('*', (req, res) => {
 // });
 
 // API routes
-require('./routes')(app);
+// require('./routes')(app);
 
 server.listen(port, (err) => {
     if (err) {
