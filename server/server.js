@@ -38,12 +38,12 @@ const io = require("socket.io")(server);
 
 // app.use('/public', express.static('public'));
 
-app.use('/', express.static(`${__dirname}/../build`));
+app.use('/', express.static(`${__dirname}/../dist`));
 
 app.get('*', (req, res) => {
     // eslint-disable-next-line no-undef
     console.log("Server Start 44##$$")
-    res.sendFile(path.resolve(__dirname, '../build/index.html'));
+    res.sendFile(path.resolve(__dirname, '../dist/index.html'));
     res.end();
 });
 
