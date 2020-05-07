@@ -259,9 +259,10 @@ io.on("connection", function(client) {
 // API routes
 require('./routes')(app);
 
-app.use(express.static(path.resolve(__dirname, '../build')));
+app.use('/', express.static(path.resolve(__dirname, '../build')));
 
 app.get('*', function(req, res) {
+    console.log("Server Start $$$$");
     res.sendFile(path.resolve(__dirname, '../build/index.html'));
     res.end();
 });
