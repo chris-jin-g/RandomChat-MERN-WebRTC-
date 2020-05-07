@@ -272,12 +272,12 @@ console.log("Response json send successfully");
 // API routes
 // require('./routes')(app);
 
-server.listen(port, (err) => {
+server.listen(process.env.PORT || 3000, (err) => {
     if (err) {
         console.log(err);
     }
 
-    console.info('Open http://localhost:%s/ in your browser.', port);
+    console.info('Open http://localhost:%s/ in your browser.', process.env.PORT || 3000);
 });
 
 
