@@ -1,19 +1,19 @@
 const express = require('express');
 // const fs = require('fs');
 
-const mongoose = require('mongoose');
+// const mongoose = require('mongoose');
 const path = require('path');
 
 
-const logger = require('morgan');
-const cookieParser = require('cookie-parser');
-const bodyParser = require('body-parser');
-const fileUpload = require('express-fileupload');
+// const logger = require('morgan');
+// const cookieParser = require('cookie-parser');
+// const bodyParser = require('body-parser');
+// const fileUpload = require('express-fileupload');
 
 const config = require('./config/config');
 const User = require('./models/User');
 const port = config.RESTAPIport;
-const cors = require('cors');
+// const cors = require('cors');
 
 // Configuration
 // ================================================================================================
@@ -38,12 +38,12 @@ const io = require("socket.io")(server);
 
 // app.use('/public', express.static('public'));
 
-app.use('/', express.static(`${__dirname}/../dist`));
+app.use('/', express.static(`${__dirname}/../build`));
 
 app.get('*', (req, res) => {
     // eslint-disable-next-line no-undef
     console.log("Server Start 44##$$")
-    res.sendFile(path.resolve(__dirname, '../dist/index.html'));
+    res.sendFile(path.resolve(__dirname, '../build/index.html'));
     res.end();
 });
 
