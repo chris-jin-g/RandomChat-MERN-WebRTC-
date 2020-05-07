@@ -15,7 +15,6 @@
         "draftjs-to-html": "^0.9.1",
         "emoji-mart": "^3.0.0",
         "express-fileupload": "^1.1.7-alpha.3",
-        "expose-loader": "0.7.5",
         "express": "4.17.1",
         "html-to-draftjs": "^1.5.0",
         "http": "0.0.1-security",
