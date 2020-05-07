@@ -13,6 +13,7 @@ const path = require('path');
 const config = require('./config/config');
 const User = require('./models/User');
 const port = config.RESTAPIport;
+console.log("socket port config defined");
 // const cors = require('cors');
 
 // Configuration
@@ -25,6 +26,7 @@ const port = config.RESTAPIport;
 const app = express();
 const server = require("http").createServer(app);
 const io = require("socket.io")(server);
+console.log("socket io imported");
 
 // app.use(express.urlencoded({ extended: true }));
 // app.use(express.json());
@@ -39,13 +41,14 @@ const io = require("socket.io")(server);
 // app.use('/public', express.static('public'));
 
 app.use('/', express.static(`${__dirname}/../build`));
-
+console.log("all router use this filter");
 app.get('*', (req, res) => {
     // eslint-disable-next-line no-undef
     console.log("Server Start 44##$$")
     res.sendFile(path.resolve(__dirname, '../build/index.html'));
     res.end();
 });
+console.log("Response json send successfully");
 
 // io.on("connection", function(client) {
 //     let id;
