@@ -37,6 +37,14 @@ app.use(cookieParser());
 app.use(fileUpload());
 app.use('/public', express.static('public'));
 
+app.use('/', express.static(path.resolve(__dirname, '../build')));
+
+app.get('*', function(req, res) {
+    console.log("Server Start $$$$");
+    res.sendFile(path.resolve(__dirname, '../build/index.html'));
+    res.end();
+});
+
 io.on("connection", function(client) {
     let id;
     // Create room whenever new user sign in 
@@ -258,15 +266,6 @@ io.on("connection", function(client) {
 
 // API routes
 require('./routes')(app);
-
-app.use('/', express.static(path.resolve(__dirname, '../build')));
-
-app.get('*', function(req, res) {
-    console.log("Server Start $$$$");
-    res.sendFile(path.resolve(__dirname, '../build/index.html'));
-    res.end();
-});
-
 
 server.listen(port, (err) => {
     if (err) {
