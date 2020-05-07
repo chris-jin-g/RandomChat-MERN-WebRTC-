@@ -19,7 +19,7 @@ const cors = require('cors');
 // ================================================================================================
 
 // Set up Mongoose
-mongoose.connect(config.db, { useNewUrlParser: true, useUnifiedTopology: true });
+// mongoose.connect(config.db, { useNewUrlParser: true, useUnifiedTopology: true });
 // mongoose.Promise = global.Promise;
 
 const app = express();
