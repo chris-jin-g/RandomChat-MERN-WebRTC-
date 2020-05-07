@@ -23,7 +23,7 @@ mongoose.connect(config.db, { useNewUrlParser: true, useUnifiedTopology: true })
 // mongoose.Promise = global.Promise;
 
 const app = express();
-var server = require("http").createServer(app);
+const server = require("http").createServer(app);
 const io = require("socket.io")(server);
 
 // app.use(express.urlencoded({ extended: true }));
