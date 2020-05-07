@@ -26,8 +26,8 @@ const app = express();
 var server = require("http").Server(app);
 const io = require("socket.io")(server);
 
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
+// app.use(express.urlencoded({ extended: true }));
+// app.use(express.json());
 app.use(logger('dev'));
 app.use(cors());
 
