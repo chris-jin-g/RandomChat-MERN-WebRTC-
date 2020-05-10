@@ -9,7 +9,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   MessageList,
   Navbar as NavbarComponent,
-  Avatar
+  Avatar 
 } from "react-chat-elements";
 import { MDBBtn ,MDBIcon, MDBDropdown, MDBDropdownToggle, MDBDropdownMenu, MDBDropdownItem } from 'mdbreact';
 
@@ -51,6 +51,7 @@ export default class ChatBox extends Component {
    *
    * Sends a message only if it is not falsy.
    */
+  
   onSendClicked() {
     // if (!this.state.messageText) {
     //   return;
@@ -92,18 +93,19 @@ export default class ChatBox extends Component {
     // this.setState({
     //   messageText: text,
     // });
+    // const selectEmoji = document.querySelector('[title=' + emoji.id +']');
+
     const { editorState } = this.state;
     const convertHtml = draftToHtml(convertToRaw(editorState.getCurrentContent()));
     const subHtml = convertHtml.substring(0,(convertHtml.length-5));
-    const totalHtml = `${subHtml}${emoji.native}</p>`;
-
+    // const totalHtml = `${subHtml}${emoji.native}</p>`;
+    const totalHtml = `${subHtml} :${emoji.id}: </p>`;
+    
     const blocksFromHtml = htmlToDraft(totalHtml);
     const { contentBlocks, entityMap } = blocksFromHtml;
     const contentState = ContentState.createFromBlockArray(contentBlocks, entityMap);
     const editorStateChange = EditorState.createWithContent(contentState);
     this.setState({editorState: editorStateChange});
-
-    console.log('this is convert html',totalHtml);
   }
 
   closeEmojiPicker() {
@@ -120,8 +122,7 @@ export default class ChatBox extends Component {
     this.props.onTyping();
   }
 
-  toggle_toolbar() {
-    console.log("toggle button clicked", this.state);    
+  toggle_toolbar() {   
     this.setState({toolbar_show: !this.state.toolbar_show});
   }
 
@@ -133,7 +134,6 @@ export default class ChatBox extends Component {
   
     if (event.key === 'Enter') {
       this.onSendClicked();
-      console.log("Enter Key pressed");
       return;
     }
     return getDefaultKeyBinding(event);
@@ -146,7 +146,6 @@ export default class ChatBox extends Component {
   onAttachFile(e) {
     e.preventDefault();
 
-    console.log("file changed");
     // this.props.onAttachFile();
     const data = new FormData();
     data.append('attachFile', this.attachFile.files[0]);
@@ -159,10 +158,16 @@ export default class ChatBox extends Component {
       if(json.status) {
         const { editorState } = this.state;
         const convertHtml = draftToHtml(convertToRaw(editorState.getCurrentContent()));
+        var subHtml = '';
         console.log("this is convert html",convertHtml);
-        const subHtml = convertHtml.substring(0,(convertHtml.length-5));
-        const fileContainer = `<img src="${RESTAPIUrl}/public/uploads/${json.fileName}" className="upload-image"></img>`
-        const totalHtml = `${subHtml}${fileContainer}</p>`;
+        console.log("last index charactor", convertHtml.substring(convertHtml.length-5));
+        // if(convertHtml.substring(convertHtml.length-5) == '</p>')
+        //   subHtml = convertHtml.substring(0,(convertHtml.length-5));
+        // else 
+          subHtml = convertHtml.substring(0,(convertHtml.length));
+        console.log("Index and subhtml", subHtml, convertHtml.length);
+        const fileContainer = `<img src="${RESTAPIUrl}/public/uploads/${json.fileName}" alt="${RESTAPIUrl}/public/uploads/${json.fileName}">`;
+        const totalHtml = `${subHtml}${fileContainer}`;
 
         const blocksFromHtml = htmlToDraft(totalHtml);
         const { contentBlocks, entityMap } = blocksFromHtml;
@@ -170,7 +175,7 @@ export default class ChatBox extends Component {
         const editorStateChange = EditorState.createWithContent(contentState);
         this.setState({editorState: editorStateChange});
 
-        console.log('this is convert html',totalHtml);
+        console.log('this is total html',totalHtml);
 
       }
     })
@@ -276,8 +281,9 @@ export default class ChatBox extends Component {
                 <MessageList
                   className="message-list"
                   lockable={true}
-                  toBottomHeight={"100%"}
+                  toBottomHeight={"300"}
                   dataSource={this.props.targetUser.messages}
+                  downButton={true}
                 />
                 <FormGroup className="send-message-form">
                   <Row style={{width:"100%", position:"relative"}}>
@@ -299,7 +305,7 @@ export default class ChatBox extends Component {
                         <MDBIcon icon="font" className="mr-1" size="lg" />
                       </button> */}
                       <MDBIcon 
-                        icon="font" 
+                        icon="palette" 
                         size="lg"
                         onClick={this.toggle_toolbar.bind(this)}
                         className="font-selector mr-1 toggle-icon"
@@ -342,7 +348,9 @@ export default class ChatBox extends Component {
                           className="sendButton"
                           onClick={this.onSendClicked.bind(this)}
                         >
-                          <FontAwesomeIcon icon={faPaperPlane} color="white" />
+                          {/* <FontAwesomeIcon icon={faPaperPlane} color="white" /> */}
+                          {/* <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="paper-plane" class="svg-inline--fa fa-paper-plane fa-w-16 " role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" color="white"><path fill="currentColor" d="M476 3.2L12.5 270.6c-18.1 10.4-15.8 35.6 2.2 43.2L121 358.4l287.3-253.2c5.5-4.9 13.3 2.6 8.6 8.3L176 407v80.5c0 23.6 28.5 32.9 42.5 15.8L282 426l124.6 52.2c14.2 6 30.4-2.9 33-18.2l72-432C515 7.8 493.3-6.8 476 3.2z"></path></svg> */}
+                          <svg class="jss4" focusable="false" viewBox="0 0 24 24" aria-hidden="true" role="presentation"><path fill="#fff" d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path><path fill="none" d="M0 0h24v24H0z"></path></svg>
                         </div>
                       </InputGroup.Button>
 
@@ -361,10 +369,14 @@ export default class ChatBox extends Component {
             )}
           </div>
         
-          
+          <Picker 
+            style={this.state.showEmojiPicker? { position: 'absolute', bottom: '90px', right: '10px', opacity: '1' } : { position: 'absolute', bottom: '90px', right: '10px', opacity: '0', zIndex:'-3' }} 
+            onSelect={this.addEmoji.bind(this)} 
+            emojiTooltip={true}
+          />
+
         { this.state.showEmojiPicker ? (
-          <div>
-            <Picker style={{ position: 'absolute', bottom: '90px', right: '10px' }} onSelect={this.addEmoji.bind(this)} />
+          <div>            
             <div className="emoji-back" onClick={this.closeEmojiPicker.bind(this)}></div>
           </div>
         ): null }       

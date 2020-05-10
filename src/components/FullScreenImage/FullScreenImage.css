@@ -1,0 +1,44 @@
+.full-image {
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    z-index: 10;
+    background-color: #212529;
+    top: 0px;
+    left: 0px;
+    margin: auto;
+}
+
+.close-btn {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 1rem;
+    font-weight: 400;
+    color: white;
+    cursor: pointer;
+}
+
+.close-btn:hover {
+    transform: scale(1.2);
+}
+
+.full-image img {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    margin: auto;
+}
+
+.download-btn {
+    position: absolute;
+    right: 40px;
+    top: 9px;
+    color: white;
+}
+
+.download-btn:hover {
+    transform: scale(1.1);
+}

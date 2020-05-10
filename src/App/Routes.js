@@ -19,9 +19,17 @@ const fakeAuth = () => {
 
 const PrivateRoute = ({ component: Component, ...rest }) => (
   <Route {...rest} render={(props) => (
-    fakeAuth()
+    fakeAuth()      
+      ? <Redirect to='/chat' /> 
+      : <Component {...props} />
+  )} />
+)
+
+const PrivateChatRoute = ({ component: Component, ...rest }) => (
+  <Route {...rest} render={(props) => (
+    fakeAuth()  
       ? <Component {...props} />
-      : <Redirect to='/guesteeee' />
+      : <Redirect to='/' /> 
   )} />
 )
 
@@ -30,10 +38,10 @@ class Routes extends React.Component {
   render() {
     return (
       <Switch>
-        <Route exact path="/" component={HomePage} />
-        <Route path="/usersign" component={ UserSign } />
-        <Route path="/guest" component={ GuestSign } />
-        <PrivateRoute path="/chat" component={ Chat } />
+        <PrivateRoute exact path="/" component={HomePage} />
+        <PrivateRoute path="/usersign" component={ UserSign } />
+        <PrivateRoute path="/guest" component={ GuestSign } />
+        <PrivateChatRoute path="/chat" component={ Chat } />
       </Switch>
     );
   }

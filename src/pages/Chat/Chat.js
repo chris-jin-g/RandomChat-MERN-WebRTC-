@@ -7,6 +7,7 @@ import Modal from "react-bootstrap/lib/Modal";
 import ChatBox from "../../components/ChatBox";
 import OnTyping from "../../components/OnTyping/OnTyping";
 import ProfileBox from "../../components/ProfileBox/ProfileBox";
+import FullScreenImage from "../../components/FullScreenImage/FullScreenImage";
 import SearchSettingBox from "../../components/SearchSettingBox/SearchSettingBox";
 import ErrorModal from "../../components/ErrorModal";
 import LoadingModal from "../../components/LoadingModal";
@@ -60,6 +61,13 @@ class App extends Component {
   socket = null;
   constructor() {
     super();
+
+    const obj = getFromStorage('guest_signin');
+    if(obj && obj.token) {
+        var decoded_token = jwt_decode(obj.token);
+        var signedInUser = decoded_token.user;
+    }
+
     this.state = {
       signInModalShow: false,
       users: [], // Avaiable users for signing-in
@@ -81,6 +89,7 @@ class App extends Component {
         ageMax: 99,
       },
       onTyping: false,
+      showImageFullScreen: false,
 
       // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@
       // clientId: '',
@@ -116,6 +125,28 @@ class App extends Component {
     this.setupSocketListeners();
     // this.findTargetUser();
     console.log("This is signed in user:", this.state.signedInUser);
+  }
+
+  componentDidUpdate() {
+    var imgObj = document.getElementsByTagName("img");
+    let that = this;
+    for (var i = 0 ; i < imgObj.length; i++) {
+      imgObj[i].addEventListener('click' , function() {
+        if(this.hasAttribute('data_group')) {
+          console.log("this is attach file property", this.attributes.getNamedItem("src").value)
+          
+          that.setState({
+            showImageFullScreen: true,
+            attachFileUrl: this.attributes.getNamedItem("src").value
+          });
+        }
+
+      }) ; 
+    }
+
+    // imgObj.addEventListener("click", function(){
+    //   alert("Sdfsdf");
+    // });
   }
 
   initSocketConnection() {
@@ -280,18 +311,38 @@ class App extends Component {
 
   onMessageRecieved(message) {
       // console.log("this is message response", message);
-    let userChatData = this.state.userChatData;
+    let userChatData = this.state.userChatData;    
     let messageData = message.message;
+    var messageDataText = messageData.text;
+    
+    if(messageDataText == '<p></p>\n')
+      return false;
+      
+    // Handling emoji icon string
+    let regexp = /:[\w]+[_]?[-]?[+]*[\w]+:/g;
+    let str = messageData.text;
+
+    let array = [...str.matchAll(regexp)];
+
+    for(let i = 0 ; i < array.length ; i++)  {
+      let emojiComp = document.querySelector('[title=' + String(array[i]).split(":").join("") +']');
+      let emojiHtml = emojiComp.innerHTML;
+      messageDataText = messageDataText.replace(String(array[i]), String(emojiHtml));
+    }
+
+    // Handling image case
+    messageDataText = messageDataText.split("<img").join("<img data_group='attach-file'");
+
     let targetId;
     if (message.from === this.state.signedInUser._id) {
       messageData.position = "right";
-      messageData.renderAddCmp = () => { return renderHtml(`<div className="message-text message-text-right">${message.message.text}</div>`)};
+      messageData.renderAddCmp = () => { return renderHtml(`<div className="message-text message-text-right">${messageDataText}</div>`)};
       targetId = message.to;
     //   messageData.avatar = `${process.env.REACT_APP_SERVER_URI}/avatar/${this.state.user.id}.jpg`;
       messageData.avatar = `${RESTAPIUrl}/public/profile/${this.state.signedInUser.profile_image}`;
     } else {
       messageData.position = "left";      
-      messageData.renderAddCmp = () => { return renderHtml(`<div className="message-text message-text-left">${message.message.text}</div>`)};
+      messageData.renderAddCmp = () => { return renderHtml(`<div className="message-text message-text-left">${messageDataText}</div>`)};
       targetId = message.from;
     //   messageData.avatar = `${process.env.REACT_APP_SERVER_URI}/avatar/${targetId}.jpg`;
       messageData.avatar = `${RESTAPIUrl}/public/profile/${this.state.targetUser.profile_image}`;
@@ -321,8 +372,12 @@ class App extends Component {
     userChatData.messages.push(messageData);
     this.setState({ userChatData });
     console.log("This is state for this component",this.state);
-  }
 
+
+    // Scroll to bottom when receiving the new message
+    var element = document.querySelector('[class="rce-mlist"]');
+    element.scrollTop = element.scrollHeight;
+  }
   /**
    *
    * @param {User} e
@@ -390,6 +445,9 @@ class App extends Component {
 
   onSearchSettingModalShow(status) {
     this.setState({searchModalShow: status});    
+  }
+  onShowImageFullScreen() {
+    this.setState({showImageFullScreen: false});
   }
   
   onTyping() {
@@ -521,6 +579,13 @@ class App extends Component {
             endCall={this.endCallHandler}
           />
         ) }
+        {this.state.showImageFullScreen ? 
+          <FullScreenImage 
+            imageUrl={this.state.attachFileUrl}
+            onShowImageFullScreen={this.onShowImageFullScreen.bind(this)}
+          />
+          : null
+        }
         <CallModal
           status={callModal}
           startCall={this.startCallHandler}
