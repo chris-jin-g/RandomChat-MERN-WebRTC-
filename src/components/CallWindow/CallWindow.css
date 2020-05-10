@@ -1,0 +1,46 @@
+.call-window {
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    left: 0px;
+    top: 0px;
+    background: white;
+    border: 1px solid rgba(0, 0, 0, .2);
+    border-radius: .3rem;
+    outline: 0;
+}
+
+.call-window #peerVideo {
+    position: absolute;
+    height: calc( 100vh - 137px);
+    width: calc(100vw - 40px);
+    margin: auto;
+    left: 20px;
+    object-fit: cover;
+    vertical-align: middle;
+}
+
+.video-user {
+    position: absolute;
+    right: 1.5rem;
+    top: .625rem;
+    overflow: hidden;
+    height: 9.375rem;
+    width: 9.375rem;
+}
+
+.vdeo-user #localVideo {
+    border-radius: .25rem;
+    height: auto;
+    width: auto;
+    max-width: 9.375rem;
+    padding: .25rem;
+}
+
+@media only screen and (max-width: 768px) {
+    .call-window #peerVideo {
+        height: 100vh;
+        -o-object-fit: cover;
+        object-fit: cover;
+    }
+}

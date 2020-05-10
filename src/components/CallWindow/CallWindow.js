@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
+import "./CallWindow.css";
 
 const getButtonClass = (icon, enabled) => classnames(`btn-action fa ${icon}`, { disable: !enabled });
 
@@ -39,8 +40,14 @@ function CallWindow({ peerSrc, localSrc, config, mediaDevice, status, endCall })
 
   return (
     <div className={classnames('call-window', status)}>
-      <video id="peerVideo" ref={peerVideo} autoPlay />
-      <video id="localVideo" ref={localVideo} autoPlay muted />
+      <div className="video-contact">
+        <video id="peerVideo" ref={peerVideo} autoPlay />
+      </div>
+
+      <div className="video-user">
+        <video id="localVideo" ref={localVideo} autoPlay muted />  
+      </div>      
+      
       <div className="video-control">
         <button
           key="btnVideo"
