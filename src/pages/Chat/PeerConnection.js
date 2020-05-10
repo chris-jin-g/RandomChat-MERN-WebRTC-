@@ -2,7 +2,14 @@ import MediaDevice from './MediaDevice';
 import Emitter from './Emitter';
 import socket from './socket';
 
-const PC_CONFIG = { iceServers: [{ urls: ['stun:stun.l.google.com:19302'] }] };
+// const PC_CONFIG = { iceServers: [{ urls: ['stun:stun.l.google.com:19302'] }] };
+const PC_CONFIG = {
+    iceServers: [{
+        url: 'turn:numb.viagenie.ca',
+        credential: 'nothingbutthebest',
+        username: 'bluesky410219@gmail.com'
+    }]
+};
 
 class PeerConnection extends Emitter {
     /**

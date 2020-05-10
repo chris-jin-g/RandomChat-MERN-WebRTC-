@@ -569,6 +569,14 @@ class App extends Component {
           onSearchSettingModalShow={this.onSearchSettingModalShow.bind(this)}
         />
 
+        {this.state.showImageFullScreen ? 
+          <FullScreenImage 
+            imageUrl={this.state.attachFileUrl}
+            onShowImageFullScreen={this.onShowImageFullScreen.bind(this)}
+          />
+          : null
+        }
+
         {!_.isEmpty(this.config) && (
           <CallWindow
             status={callWindow}
@@ -579,13 +587,7 @@ class App extends Component {
             endCall={this.endCallHandler}
           />
         ) }
-        {this.state.showImageFullScreen ? 
-          <FullScreenImage 
-            imageUrl={this.state.attachFileUrl}
-            onShowImageFullScreen={this.onShowImageFullScreen.bind(this)}
-          />
-          : null
-        }
+        
         <CallModal
           status={callModal}
           startCall={this.startCallHandler}
