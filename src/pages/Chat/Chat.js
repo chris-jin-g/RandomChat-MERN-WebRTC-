@@ -593,6 +593,7 @@ class App extends Component {
           startCall={this.startCallHandler}
           rejectCall={this.rejectCallHandler}
           callFrom={this.state.targetUser._id}
+          contactUser={this.state.targetUser.userName}
         />
 
 

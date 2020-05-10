@@ -4,7 +4,7 @@ import classnames from 'classnames';
 import './CallModal.css';
 
 
-function CallModal({ status, callFrom, startCall, rejectCall }) {
+function CallModal({ status, callFrom, startCall, rejectCall, contactUser }) {
   const acceptWithVideo = (video) => {
     const config = { audio: true, video };
     return () => startCall(false, callFrom, config);
@@ -13,7 +13,7 @@ function CallModal({ status, callFrom, startCall, rejectCall }) {
   return (
     <div className={classnames('call-modal', status)}>
       <p>
-        <span className="caller">{`${callFrom} is calling`}</span>
+        <span className="caller">{`${contactUser} is calling`}</span>
       </p>
       <button
         type="button"
