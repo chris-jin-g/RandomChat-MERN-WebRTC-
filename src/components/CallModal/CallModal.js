@@ -17,7 +17,7 @@ function CallModal({ status, callFrom, startCall, rejectCall }) {
       </p>
       <button
         type="button"
-        className="btn-action fa fa-video-camera"
+        className="btn-action fa fa-video"
         onClick={acceptWithVideo(true)}
       />
       <button

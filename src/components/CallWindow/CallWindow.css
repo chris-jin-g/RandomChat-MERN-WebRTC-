@@ -10,31 +10,58 @@
     outline: 0;
 }
 
-.call-window #peerVideo {
+.video-contact {
     position: absolute;
-    height: calc( 100vh - 137px);
-    width: calc(100vw - 40px);
+    height: calc( 100vh - 30px);
+    width: calc(100vw - 30px);
     margin: auto;
-    left: 20px;
+    left: 15px;
+    top: 15px;
     object-fit: cover;
-    vertical-align: middle;
+    overflow: hidden;
+}
+
+.call-window #peerVideo {
+    height: 100%;
+    width: auto;
 }
 
 .video-user {
     position: absolute;
     right: 1.5rem;
-    top: .625rem;
+    top: 1.5rem;
     overflow: hidden;
     height: 9.375rem;
     width: 9.375rem;
 }
 
-.vdeo-user #localVideo {
+.video-user #localVideo {
     border-radius: .25rem;
     height: auto;
     width: auto;
     max-width: 9.375rem;
-    padding: .25rem;
+    border-radius: 8px;
+    border: 3px solid white;
+}
+
+.video-control {
+    position: absolute;
+    bottom: 40px;
+    left: 50%;
+    transform: translate(-50%, 0%);
+}
+
+.video-control button {
+    color: white;
+}
+
+button.fa-video,
+button.fa-microphone {
+    background-color: blue;
+}
+
+button.hangup {
+    background-color: red;
 }
 
 @media only screen and (max-width: 768px) {
