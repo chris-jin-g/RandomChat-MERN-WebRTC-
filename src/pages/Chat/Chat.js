@@ -1,26 +1,19 @@
 import React, { Component } from "react";
-import NavBar from "../../components/NavBar";
-import Grid from "react-bootstrap/lib/Grid";
-import Row from "react-bootstrap/lib/Row";
-import Col from "react-bootstrap/lib/Col";
-import Modal from "react-bootstrap/lib/Modal";
 import ChatBox from "../../components/ChatBox";
 import OnTyping from "../../components/OnTyping/OnTyping";
 import ProfileBox from "../../components/ProfileBox/ProfileBox";
 import FullScreenImage from "../../components/FullScreenImage/FullScreenImage";
 import SearchSettingBox from "../../components/SearchSettingBox/SearchSettingBox";
+import ReportBox from "../../components/ReportBox/ReportBox";
 import ErrorModal from "../../components/ErrorModal";
 import LoadingModal from "../../components/LoadingModal";
 import "react-chat-elements/dist/main.css";
-import io from "socket.io-client";
-import { fetchUsers } from "../../dataservice/request";
 import {
   NotificationContainer,
   NotificationManager
 } from "react-notifications";
 import "react-notifications/lib/notifications.css";
 import axios from "axios";
-import { SOCKET_URI } from '../../config/config';
 import { getFromStorage } from '../../utils/storage';
 import jwt_decode from "jwt-decode";
 
@@ -74,9 +67,9 @@ class App extends Component {
       userChatData: '', // this contains users from which signed-in user can chat and its message data.
       user: null, // Signed-In User
       selectedUserIndex: 1,
-      signInModalShow: false,
       profileModalShow: false,
       searchModalShow: false,
+      reportModalShow:false,
       error: false,
       errorMessage: "",
       targetUser: '',
@@ -90,6 +83,7 @@ class App extends Component {
       },
       onTyping: false,
       showImageFullScreen: false,
+      imageHash: Date.now(),
 
       // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@
       // clientId: '',
@@ -123,8 +117,6 @@ class App extends Component {
     this.initSocketConnection();
     this.createSocketRoom();
     this.setupSocketListeners();
-    // this.findTargetUser();
-    console.log("This is signed in user:", this.state.signedInUser);
   }
 
   componentDidUpdate() {
@@ -143,10 +135,6 @@ class App extends Component {
 
       }) ; 
     }
-
-    // imgObj.addEventListener("click", function(){
-    //   alert("Sdfsdf");
-    // });
   }
 
   initSocketConnection() {
@@ -225,11 +213,7 @@ class App extends Component {
    * Get target user to chat
    */
   findTargetUser() {
-    if(this.state.targetUser) {
-        let blackUsersList = this.state.blackUsersList;
-        blackUsersList.push(this.state.targetUser._id);
-        this.setState({blackUsersList});
-    }
+    
     let findTargetQuery = {
         blackUsersList: this.state.blackUsersList,
         searchSetting: this.state.searchSetting,
@@ -240,7 +224,13 @@ class App extends Component {
   }
 
   onFindTargetUser(targetUser) {
-    console.log("this is target user",targetUser);    
+    console.log("this is target user",targetUser);
+    // Add current target user to black user list
+    if(this.state.targetUser) {
+      let blackUsersList = this.state.blackUsersList;
+      blackUsersList.push(this.state.targetUser._id);
+      this.setState({blackUsersList});
+    }
     let userChatData = {
         id: targetUser._id,
         name: targetUser.userName,
@@ -251,6 +241,33 @@ class App extends Component {
     }
     this.setState({ targetUser });
     this.setState({userChatData});
+    
+    let message = {
+      to: this.state.signedInUser._id,
+      message: {
+        type: "text",
+        text: `<span style="color: blue;">You are now connected to ${this.state.targetUser.userName}<br>${this.state.targetUser.gender} ${this.state.targetUser.age} ${this.state.targetUser.location}</span>`,
+        className: "message"
+      },
+      from: this.state.targetUser._id
+    };
+    this.socket.emit("message", message);
+  }
+
+  onSearchNone() {
+    NotificationManager.error(
+      `Sorry your search did not have any results. Please widen your search`
+    );
+    this.setState({targetUser: ''});
+    this.setState({ userChatData: {}}); 
+  }
+
+  onAvailableNone() {
+    NotificationManager.error(
+      `You have already contacted with all online users. Try search again`
+    );
+    this.setState({targetUser: ''});
+    this.setState({ userChatData: {}}); 
   }
   
   onIgnore() {
@@ -270,9 +287,13 @@ class App extends Component {
     this.socket.on("disconnect", this.onClientDisconnected.bind(this));
     //////
     this.socket.on("find_target", this.onFindTargetUser.bind(this));
+    this.socket.on("search-none", this.onSearchNone.bind(this));
+    this.socket.on("available-none", this.onAvailableNone.bind(this));
     this.socket.on("ignore", this.onIgnore.bind(this));
     this.socket.on("on-typing", this.onTargetUserTyping.bind(this));
-
+    this.socket.on("target-disconnect", this.onTargetDisconnect.bind(this));
+    this.socket.on("target-logout", this.onTargetLogout.bind(this));
+    this.socket.on("log-out", this.onLogOut.bind(this));
 
     // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@
     this.socket
@@ -315,7 +336,7 @@ class App extends Component {
     let messageData = message.message;
     var messageDataText = messageData.text;
     
-    if(messageDataText == '<p></p>\n')
+    if(messageDataText === '<p></p>\n')
       return false;
       
     // Handling emoji icon string
@@ -333,17 +354,17 @@ class App extends Component {
     // Handling image case
     messageDataText = messageDataText.split("<img").join("<img data_group='attach-file'");
 
-    let targetId;
+    // let targetId;
     if (message.from === this.state.signedInUser._id) {
       messageData.position = "right";
       messageData.renderAddCmp = () => { return renderHtml(`<div className="message-text message-text-right">${messageDataText}</div>`)};
-      targetId = message.to;
+      // targetId = message.to;
     //   messageData.avatar = `${process.env.REACT_APP_SERVER_URI}/avatar/${this.state.user.id}.jpg`;
       messageData.avatar = `${RESTAPIUrl}/public/profile/${this.state.signedInUser.profile_image}`;
     } else {
       messageData.position = "left";      
       messageData.renderAddCmp = () => { return renderHtml(`<div className="message-text message-text-left">${messageDataText}</div>`)};
-      targetId = message.from;
+      // targetId = message.from;
     //   messageData.avatar = `${process.env.REACT_APP_SERVER_URI}/avatar/${targetId}.jpg`;
       messageData.avatar = `${RESTAPIUrl}/public/profile/${this.state.targetUser.profile_image}`;
     }
@@ -354,14 +375,14 @@ class App extends Component {
     if (!userChatData.messages) {
       userChatData.messages = [];
     } else {
-      if(userChatData.messages[userChatData.messages.length-1].alert == true ) {
+      if(userChatData.messages[userChatData.messages.length-1].alert === true ) {
         userChatData.messages.pop();
       }  
     }
     // console.log(this.state.userChatData.messages[this.state.userChatData.messages.length - 1]);
     let messages = this.state.userChatData.messages;
     if(typeof messages != 'undefined' && messages.length > 0) {
-      if(messages[messages.length-1].position == messageData.position) {
+      if(messages[messages.length-1].position === messageData.position) {
         let prevMessageData = messages[messages.length-1];
         prevMessageData.avatar = '';
         prevMessageData.date = '';
@@ -446,6 +467,9 @@ class App extends Component {
   onSearchSettingModalShow(status) {
     this.setState({searchModalShow: status});    
   }
+  onReportModalShow(status) {
+    this.setState({reportModalShow: status});
+  }
   onShowImageFullScreen() {
     this.setState({showImageFullScreen: false});
   }
@@ -460,9 +484,8 @@ class App extends Component {
     let userChatData = this.state.userChatData;
     let messages = userChatData.messages;
     let messageData = {};
-    let targetId = this.state.targetUser._id;
     if(typeof messages != 'undefined'){
-      if(messages[messages.length-1].alert != true || messages.length == 0) {
+      if(messages[messages.length-1].alert !== true || messages.length === 0) {
         messageData.position = "left";      
         messageData.renderAddCmp = () => { return <OnTyping/>};
         messageData.avatar = `${RESTAPIUrl}/public/profile/${this.state.targetUser.profile_image}`;
@@ -477,7 +500,7 @@ class App extends Component {
         
         this.turnOffRedTimeout = setTimeout(() => {
           userChatData = this.state.userChatData;
-          if(userChatData.messages[userChatData.messages.length-1].alert == true) {
+          if(userChatData.messages[userChatData.messages.length-1].alert === true) {
             userChatData.messages.pop();
             this.setState({ userChatData });
           }          
@@ -489,6 +512,48 @@ class App extends Component {
     
   }
 
+  onTargetDisconnect() {
+    NotificationManager.error(
+      `${this.state.targetUser.userName} disconnected from this chat room.`
+    );
+    this.setState({targetUser: ''});
+    this.setState({ userChatData: {}});    
+  }
+
+  updateProfile() {
+    const obj = getFromStorage('guest_signin');
+    if(obj && obj.token) {
+        var decoded_token = jwt_decode(obj.token);
+        var signedInUser = decoded_token.user;
+    }
+    this.setState({signedInUser: signedInUser, imageHash:Date.now()});
+  }
+
+  closeSettingBox() {
+    this.setState({
+      profileModalShow: false,
+      searchModalShow: false,
+      reportModalShow:false,
+    })
+  }
+
+  logOut() {
+    console.log("log out call");
+    this.socket.emit('log-out', signedInUser);
+  }
+
+  onLogOut() {
+    localStorage.clear();
+    this.props.history.push("/");
+  }
+
+  onTargetLogout() {
+    NotificationManager.error(
+      `${this.state.targetUser.userName} log out.`
+    );
+    this.setState({targetUser: ''});
+    this.setState({ userChatData: {}});  
+  }
   // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
   startCall(isCaller, targetUserID, config) {
     console.log("call start now ", isCaller, targetUserID, config)
@@ -523,30 +588,28 @@ class App extends Component {
     });
   }
   
+  
   render() {
-    let chatBoxProps =  {
-          xs: 12,
-          sm: 12
-        };
-    
-
     // @@@@@@@@@@@@@@@@@@@@@@@@@@
-    const { clientId, callFrom, callModal, callWindow, localSrc, peerSrc } = this.state;
+    const { callModal, callWindow, localSrc, peerSrc } = this.state;
     return (
       <div>
         {/* <button onClick={this.findTargetUser.bind(this)}>Next stranger</button> */}
         
         <ChatBox
           signedInUser={this.state.signedInUser}
+          imageHash={this.state.imageHash}
           onSendClicked={this.createMessage.bind(this)}
           targetUser={
             this.state.userChatData
           }
           onProfileModalShow={this.onProfileModalShow.bind(this)}
           onSearchSettingModalShow={this.onSearchSettingModalShow.bind(this)}
+          onReportModalShow={this.onReportModalShow.bind(this)}
           findTargetUser={this.findTargetUser.bind(this)}
           onTyping={this.onTyping.bind(this)}
           startCall={this.startCallHandler}
+          logOut={this.logOut.bind(this)}
         />
         
         <ErrorModal
@@ -559,15 +622,30 @@ class App extends Component {
         
         <ProfileBox 
           profileInfo={this.state.signedInUser}
+          iamgeHash={this.state.imageHash}
           onChangeProfile={this.changeProfile.bind(this)}
           onProfileModalShow={this.onProfileModalShow.bind(this)}
-          profileContainer={this.state.profileModalShow ? 'profile-container' : 'profile-container-hide' }         
+          profileContainer={this.state.profileModalShow ? 'profile-container' : 'profile-container-hide' }
+          updateProfile={this.updateProfile.bind(this)}
         />
         <SearchSettingBox
           searchContainer={this.state.searchModalShow ? 'search-container' : 'search-container-hide'}
           searchSetting={this.state.searchSetting}
           onSearchSettingModalShow={this.onSearchSettingModalShow.bind(this)}
         />
+
+        <ReportBox
+          reportContainer={this.state.reportModalShow ? 'report-container' : 'report-container-hide'}
+          onReportModalShow={this.onReportModalShow.bind(this)}
+          signedInUser={this.state.signedInUser}
+          targetUser={this.state.targetUser}
+        />
+
+        { this.state.reportModalShow || this.state.profileModalShow || this.state.searchModalShow ? (
+          <div>            
+            <div className="setting-back" onClick={this.closeSettingBox.bind(this)}></div>
+          </div>
+        ): null } 
 
         {this.state.showImageFullScreen ? 
           <FullScreenImage 
@@ -588,14 +666,16 @@ class App extends Component {
           />
         ) }
         
-        <CallModal
-          status={callModal}
-          startCall={this.startCallHandler}
-          rejectCall={this.rejectCallHandler}
-          callFrom={this.state.targetUser._id}
-          contactUser={this.state.targetUser.userName}
-        />
-
+        {this.state.targetUser ? (
+          <CallModal
+            status={callModal}
+            startCall={this.startCallHandler}
+            rejectCall={this.rejectCallHandler}
+            callFrom={this.state.targetUser._id}
+            contactUser={this.state.targetUser.userName}
+            userAvatar={this.state.targetUser.profile_image}
+          />
+        ): null}     
 
       </div>
     );

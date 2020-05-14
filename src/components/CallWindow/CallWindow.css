@@ -1,54 +1,75 @@
-.call-window {
-    position: fixed;
-    width: 100vw;
-    height: 100vh;
-    left: 0px;
-    top: 0px;
-    background: white;
-    border: 1px solid rgba(0, 0, 0, .2);
-    border-radius: .3rem;
-    outline: 0;
-}
-
 .video-contact {
-    position: absolute;
-    height: calc( 100vh - 30px);
-    width: calc(100vw - 30px);
-    margin: auto;
-    left: 15px;
-    top: 15px;
+    position: fixed;
+    width: 300px;
+    height: auto;
+    left: 20px;
+    top: 100px;
     object-fit: cover;
     overflow: hidden;
+    z-index: 5;
 }
 
 .call-window #peerVideo {
-    height: 100%;
-    width: auto;
+    height: auto;
+    width: 100%;
+    border-radius: 6px;
+    border: 5px solid white;
 }
 
 .video-user {
-    position: absolute;
-    right: 1.5rem;
-    top: 1.5rem;
+    position: fixed;
     overflow: hidden;
-    height: 9.375rem;
-    width: 9.375rem;
+    height: 60px;
+    width: auto;
+    right: 140px;
+    top: 7px;
+    border: 1px solid grey;
+    border-radius: 9px;
 }
 
 .video-user #localVideo {
-    border-radius: .25rem;
-    height: auto;
+    height: 100%;
     width: auto;
     max-width: 9.375rem;
     border-radius: 8px;
-    border: 3px solid white;
+    border: 3px solid #fff;
 }
 
 .video-control {
     position: absolute;
-    bottom: 40px;
+    bottom: 92px;
     left: 50%;
-    transform: translate(-50%, 0%);
+    transform: translate(-50%);
+    animation: fade-out 4s;
+}
+
+@keyframes fade-out {
+    75% {
+        opacity: 1;
+    }
+    98% {
+        opacity: 0;
+    }
+    100% {
+        display: none;
+    }
+}
+
+.video-control:hover {
+    display: inline-block;
+    animation: fade-in 1s;
+}
+
+@keyframes fade-in {
+    0% {
+        opacity: 0;
+    }
+    98% {
+        opacity: 1;
+    }
+    100% {
+        display: inline-block;
+    }
 }
 
 .video-control button {
@@ -57,17 +78,24 @@
 
 button.fa-video,
 button.fa-microphone {
-    background-color: blue;
+    background-color: rgb(76, 175, 80);
 }
 
 button.hangup {
-    background-color: red;
+    background-color: rgb(244, 67, 54);
 }
 
-@media only screen and (max-width: 768px) {
-    .call-window #peerVideo {
-        height: 100vh;
-        -o-object-fit: cover;
-        object-fit: cover;
-    }
+.call-modal .btn-action,
+.video-control .btn-action {
+    height: 40px;
+    width: 40px;
+    line-height: 10px;
+    margin: 0 8px;
+    font-size: 1.2em;
+    text-align: center;
+    border-radius: 50%;
+    cursor: pointer;
+    transition-duration: .25s;
 }
+
+@media only screen and (max-width: 768px) {}

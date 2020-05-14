@@ -26,9 +26,13 @@ const UserSchema = new mongoose.Schema({
         type: String,
         default: '',
     },
+    report_reason: [{
+        reporter_id: { type: String, max: 100 },
+        reason: { type: String, max: 100 },
+    }],
     report_number: {
         type: Number,
-        default: '',
+        default: 0,
     },
     isDeleted: {
         type: Boolean,

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
 
-function CallModal({ status, callFrom, startCall, rejectCall }) {
+function CallModal({ status, callFrom, startCall, rejectCall, userAvatar }) {
   const acceptWithVideo = (video) => {
     const config = { audio: true, video };
     return () => startCall(false, callFrom, config);
@@ -11,9 +11,13 @@ function CallModal({ status, callFrom, startCall, rejectCall }) {
 
   return (
     <div className={classnames('call-modal', status)}>
+      <div className="target-avatar">
+        <img src={userAvatar} alt="contact-user"></img>
+      </div>
       <p>
-        <span className="caller">{`${callFrom} is calling`}</span>
+        <span className="caller">{`${callFrom}`}</span>
       </p>
+        <span className="incoming">Incoming call...</span>
       <button
         type="button"
         className="btn-action fa fa-video-camera"

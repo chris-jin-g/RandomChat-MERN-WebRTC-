@@ -3,7 +3,7 @@ var fs = require('fs');
 const User = require('../../models/User');
 
 module.exports = (app) => {
-    app.post('/api/profile', (req, res, next) => {
+    app.post('/api/profile/image', (req, res, next) => {
 
         let profileImage = req.files.file;
         let uploadDir = 'public/profile/';
@@ -65,5 +65,43 @@ module.exports = (app) => {
             console.log("File does not exist")
         }
 
-    })
+    });
+
+    app.post('/api/profile/update', (req, res, next) => {
+
+        let prevFileFullName = req.body.fileName;
+        // When profile image's filetype changed, then should change token information
+        User.findOneAndUpdate({
+            _id: req.body._id
+        }, {
+            $set: {
+                userName: req.body.userName,
+                gender: req.body.gender,
+                age: req.body.age,
+                location: req.body.location
+            }
+        }, {
+            new: true
+        }, (err, newUser) => {
+            let token = jwt.sign({ user: newUser },
+                'secret', {
+                    expiresIn: 31556926 // 1 year in second 
+                },
+                (err, token) => {
+                    if (err) {
+                        console.log('Failed to create token', err);
+                    } else {
+                        console.log(token);
+                        return res.status(200).send({
+                            status: true,
+                            message: "Updated profile successfully",
+                            token: token
+                        });
+                    }
+                }
+            )
+        });
+
+
+    });
 };

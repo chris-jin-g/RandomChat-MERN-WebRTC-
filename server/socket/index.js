@@ -8,9 +8,10 @@ const User = require('../models/User');
 
 function initSocket(client) {
     let id;
-    console.log("Socket client start to work now");
+    let target_id;
     client.on("create_room", e => {
         id = e._id;
+        console.log("new room create")
         client.join(e._id);
         console.log(e._id);
         User.findOneAndUpdate({
@@ -44,6 +45,10 @@ function initSocket(client) {
         }
         ageMin = { age: { $gte: e.searchSetting.ageMin } };
         ageMax = { age: { $lte: e.searchSetting.ageMax } };
+
+        let online = { online: true };
+        let isDeleted = { isDeleted: false };
+        let connected_other = { connected_other: false };
         // var query = {};
         // query.location = e.searchSetting.location;
         // query.gender = e.searchSetting.gender;
@@ -54,19 +59,37 @@ function initSocket(client) {
         // console.log("this is query gender", gender);
         // { location: e.searchSetting.location, gender: e.searchSetting.gender }
 
+
+        User.findOneAndUpdate({
+            _id: prevTargetUser._id
+        }, {
+            $set: {
+                connected_other: false,
+            }
+        }, {
+            new: true
+        }, function() {
+            client.to(prevTargetUser._id).emit('ignore', { status: 'ignore' });
+        });
+
         User.find({
                 $and: [
                     location,
                     gender,
                     ageMin,
-                    ageMax
+                    ageMax,
+                    online,
+                    isDeleted,
+                    connected_other
                 ]
             },
             function(err, docs) {
                 if (!err) {
                     console.log("Filtered user's number:", docs.length);
-                    if (docs.length == 0) {
+                    console.log(docs[0]);
+                    if (docs.length == 1) {
                         // Send message that there is none to find
+                        client.emit('search-none');
                     } else {
                         // Remove users who contacted before
                         var available_user = [];
@@ -96,52 +119,42 @@ function initSocket(client) {
 
                             }
                         }
-                        // console.log(available_user);
-                        console.log("available user Numeber", available_user.length);
+                        console.log("available user Number", available_user.length);
                         // console.log(blackUsersList);
                         if (available_user.length != 0) {
                             let targetUser = available_user[Math.floor(Math.random() * available_user.length)];
                             console.log("signed In User information", signedInUser);
                             console.log("user vs target", signedInUser._id, targetUser._id);
                             // @@@@ Emit to ignored user.
-                            client.to(prevTargetUser._id).emit('ignore', { status: 'ignore' });
+
                             // Set previous target user to inactive
-                            User.findOneAndUpdate({
-                                _id: prevTargetUser._id
-                            }, {
-                                $set: {
-                                    connected_other: false,
-                                }
-                            }, {
-                                new: true
-                            }, function() {
-                                User
-                                    .find({
-                                        $or: [
-                                            { _id: signedInUser.id },
-                                            { _id: targetUser.id }
-                                        ]
-                                    }).updateMany({
-                                        $set: {
-                                            connected_other: true,
-                                        }
-                                    }, (err, user) => {
-                                        console.log("update part");
-                                        client.emit('find_target', targetUser);
-                                        client.to(targetUser._id).emit('find_target', signedInUser);
-                                    });
-                            });
+
+                            User
+                                .find({
+                                    $or: [
+                                        { _id: signedInUser._id },
+                                        { _id: targetUser._id }
+                                    ]
+                                }).updateMany({
+                                    $set: {
+                                        connected_other: true,
+                                    }
+                                }, (err, user) => {
+                                    console.log("update part");
+                                    client.emit('find_target', targetUser);
+                                    client.to(targetUser._id).emit('find_target', signedInUser);
+                                    target_id = targetUser._id;
+                                });
 
                         } else {
-                            // Cannot search target user Message
+                            client.emit('available-none');
                         }
 
                     }
                 } else {
                     throw err;
                 }
-            }
-        );
+            });
     });
 
     client.on("on-typing", e => {
@@ -178,17 +191,70 @@ function initSocket(client) {
         // }
     });
 
-    client.on("disconnect", function() {
-        if (!client.user_id || !clients[client.user_id]) {
-            return;
-        }
-        let targetClients = clients[client.user_id];
-        for (let i = 0; i < targetClients.length; ++i) {
-            if (targetClients[i] == client) {
-                targetClients.splice(i, 1);
+    client.on("log-out", e => {
+        User.findOneAndUpdate({
+            _id: id
+        }, {
+            $set: {
+                online: false,
+                connected_other: false,
             }
-        }
+        }, {
+            new: true
+        }, function() {
+            User.findOneAndUpdate({
+                _id: target_id
+            }, {
+                $set: {
+                    connected_other: false,
+                }
+            }, {
+                new: true
+            }, function() {
+                client.emit('log-out', e);
+                client.to(target_id).emit('target-logout');
+            });
+            // BroadCast socket for logout and disconnect
+        });
     });
+
+    client.on('disconnect', e => {
+        User.findOneAndUpdate({
+            _id: id
+        }, {
+            $set: {
+                online: false,
+                connected_other: false,
+            }
+        }, {
+            new: true
+        }, function() {
+            User.findOneAndUpdate({
+                _id: target_id
+            }, {
+                $set: {
+                    connected_other: false,
+                }
+            }, {
+                new: true
+            }, function() {
+                client.to(target_id).emit('target-disconnect');
+            });
+            // BroadCast socket for logout and disconnect
+        });
+    });
+
+    // client.on("disconnect", function() {
+    //     if (!client.user_id || !clients[client.user_id]) {
+    //         return;
+    //     }
+    //     let targetClients = clients[client.user_id];
+    //     for (let i = 0; i < targetClients.length; ++i) {
+    //         if (targetClients[i] == client) {
+    //             targetClients.splice(i, 1);
+    //         }
+    //     }
+    // });
 
     // Socket for video chat
 

@@ -66,3 +66,7 @@ select {
 .md-form {
     border: none !important;
 }
+
+form {
+    margin-top: 25%;
+}

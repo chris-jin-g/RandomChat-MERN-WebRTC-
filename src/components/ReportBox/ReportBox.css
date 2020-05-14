@@ -1,4 +1,4 @@
-.search-container {
+.report-container {
     position: fixed;
     margin: 0px;
     top: 74px;
@@ -10,6 +10,10 @@
     animation-duration: 0.5s;
 }
 
+form {
+    font-size: 15px;
+}
+
 @keyframes search-container {
     0% {
         right: -400px
@@ -19,7 +23,7 @@
     }
 }
 
-.search-container-hide {
+.report-container-hide {
     position: fixed;
     margin: 0px;
     top: 74px;
@@ -54,4 +58,8 @@
 
 .card-title {
     margin-top: 20px;
+}
+
+.report-reason {
+    padding-left: 30px;
 }

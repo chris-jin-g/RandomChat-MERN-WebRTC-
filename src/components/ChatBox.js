@@ -2,10 +2,6 @@ import React, { Component } from "react";
 import InputGroup from "react-bootstrap/lib/InputGroup";
 import Row from "react-bootstrap/lib/Row";
 import FormGroup from "react-bootstrap/lib/FormGroup";
-import Col from "react-bootstrap/lib/Col";
-import Jumbotron from "react-bootstrap/lib/Jumbotron";
-import { faPaperPlane } from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   MessageList,
   Navbar as NavbarComponent,
@@ -13,16 +9,21 @@ import {
 } from "react-chat-elements";
 import { MDBBtn ,MDBIcon, MDBDropdown, MDBDropdownToggle, MDBDropdownMenu, MDBDropdownItem } from 'mdbreact';
 
+// MDI icon import
+import Icon from '@mdi/react'
+import { mdiPhone, mdiVideoOutline, mdiDotsVertical } from '@mdi/js'
+
 // Emoji icon module
-import { Smile } from 'react-feather';
-import { Picker, emojiIndex } from 'emoji-mart';
+import { Picker } from 'emoji-mart';
 import 'emoji-mart/css/emoji-mart.css';
 
 // Font Selector module- draft.js
-import { EditorState, convertToRaw, ContentState, RichUtils, getDefaultKeyBinding, KeyBindingUtil } from 'draft-js';
+import { EditorState, convertToRaw, ContentState, getDefaultKeyBinding, KeyBindingUtil } from 'draft-js';
 import { Editor } from 'react-draft-wysiwyg';
 import draftToHtml from 'draftjs-to-html';
 import htmlToDraft from 'html-to-draftjs';
+import { SketchPicker } from 'react-color';
+import { toggleCustomInlineStyle } from 'draftjs-utils';
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 
 import { RESTAPIUrl } from '../config/config';
@@ -41,17 +42,20 @@ export default class ChatBox extends Component {
     this.state = {
       showEmojiPicker: false,
       toolbar_show : false,
+      showColorPicker: false,
+      pickerColor: 'RGB(0,0,0)',
       messageText: "",
       editorState: EditorState.createEmpty(),
     }
 
     this.onAttachFile = this.onAttachFile.bind(this);
+    this.setDomEditorRef = ref => this.domEditor = ref;
   }
-  /**
-   *
-   * Sends a message only if it is not falsy.
-   */
   
+  componentDidMount() {
+    // this.domEditor.focusEditor();
+  }
+
   onSendClicked() {
     // if (!this.state.messageText) {
     //   return;
@@ -60,7 +64,9 @@ export default class ChatBox extends Component {
     // this.setState({ messageText: "" });
     this.props.onSendClicked(draftToHtml(convertToRaw(this.state.editorState.getCurrentContent())));
     this.setState({editorState:EditorState.createEmpty()});
+    this.domEditor.focusEditor();
   }
+  
   onMessageInputChange(e) {
     this.setState({ messageText: e.target.value });
   }
@@ -118,9 +124,9 @@ export default class ChatBox extends Component {
     });
   };
 
-  onEditorChange() {
-    this.props.onTyping();
-  }
+  // onEditorChange() {
+  //   this.props.onTyping();
+  // }
 
   toggle_toolbar() {   
     this.setState({toolbar_show: !this.state.toolbar_show});
@@ -128,6 +134,8 @@ export default class ChatBox extends Component {
 
   keyBindingFunction(event) {
 
+    // Call onTyping function to let contact user typing status
+    this.props.onTyping();
     if (KeyBindingUtil.hasCommandModifier(event) && event.ctrlKey && event.key === 'Enter') {
       return getDefaultKeyBinding(event);
     }
@@ -176,12 +184,46 @@ export default class ChatBox extends Component {
         this.setState({editorState: editorStateChange});
 
         console.log('this is total html',totalHtml);
+        // Focus editor box after file select.
+        this.domEditor.focusEditor();
 
       }
     })
   }
   image_thumbs() {
     console.log("image thumbs start");
+  }
+
+  toggleColorPicker() {
+    this.setState({showColorPicker: !this.state.showColorPicker})
+  }
+  hideColorPicker() {
+    this.setState({showColorPicker: false});
+  }
+
+  onApplyColorPicker() {
+    // const newState = toggleCustomInlineStyle(this.state.editorState, 'color', rgbColor);
+    // this.setState({
+    //   editorState: newState, 
+    //   pickerColor: color.hex
+    // });
+
+    this.domEditor.focusEditor();
+    setTimeout(
+      function() {
+        const newState = toggleCustomInlineStyle(this.state.editorState, 'color', this.state.pickerColor);
+        this.setState({
+          editorState: newState,
+          showColorPicker: false
+        });
+      }
+      .bind(this),
+      500
+    );
+  }
+  handleChangeComplete = (color) => {
+    const rgbColor=`RGB(${color.rgb.r}, ${color.rgb.g}, ${color.rgb.b})`;
+      this.setState({pickerColor: rgbColor});
   }
 
   callWithVideo (video) {
@@ -197,12 +239,8 @@ export default class ChatBox extends Component {
             <NavbarComponent
               left={
                 <div>
-                  <Col mdHidden lgHidden>
-                    <p className="navBarText">
-                    </p>
-                  </Col>
                   <Avatar
-                    src={`${RESTAPIUrl}/public/profile/${this.props.signedInUser.profile_image}`}
+                    src={`${RESTAPIUrl}/public/profile/${this.props.signedInUser.profile_image}?${this.props.imageHash}`}
                     alt={"logo"}
                     size="large"
                     type="circle flexible"
@@ -220,7 +258,7 @@ export default class ChatBox extends Component {
                     color="primary"
                     onClick={this.findTargetUser.bind(this)}
                   >
-                    <img alt="Arrow, person, profile, right, user icon" className="n3VNCb" src="https://cdn3.iconfinder.com/data/icons/user-icons-7/100/31-1User-512.png" />
+                    <img alt="Arrow, person, profile, right, user icon" className="n3VNCb" src={`${RESTAPIUrl}/public/find-user.webp`} />
                   </MDBBtn>
                 </div>
                 
@@ -228,44 +266,68 @@ export default class ChatBox extends Component {
               }
               right={
                 <div>
-                  <div className="navbar-right">                    
+                  <div className="navbar-right">     
                     <MDBBtn 
                       className="action-btn phone" 
                       color="primary"
                       onClick={this.callWithVideo.bind(this, false)}
+                      disabled={typeof this.props.targetUser.id == 'undefined' ? true : false }
                     >
-                      <MDBIcon icon="phone-alt" className="mr-1" size="lg" />
+                      <Icon path={mdiPhone}
+                        size={1}
+                        horizontal
+                        vertical
+                        rotate={180}
+                      />
                     </MDBBtn>
                     
                     <MDBBtn 
                       className="action-btn video" 
                       color="primary"
                       onClick={this.callWithVideo.bind(this, true)}
+                      disabled={typeof this.props.targetUser.id == 'undefined' ? true : false }
                     >
-                      <MDBIcon icon="video" className="mr-1" size="lg" />
+                      <Icon path={mdiVideoOutline}
+                        size={1}
+                        horizontal
+                        vertical
+                        rotate={180}
+                      />
                     </MDBBtn>
                     
                     <MDBDropdown>
-                      <MDBDropdownToggle caret color="primary">
-                        <MDBIcon icon="ellipsis-v" className="mr-1" size="lg" />
+                      <MDBDropdownToggle caret color="primary" className="action-btn">
+                        <Icon path={mdiDotsVertical}
+                          size={1}
+                          horizontal
+                          vertical
+                        />
                       </MDBDropdownToggle>
                       <MDBDropdownMenu basic>
+                        <MDBDropdownItem
+                          onClick={()=> {this.props.onProfileModalShow(true)}}
+                        >
+                          Your Profile
+                        </MDBDropdownItem>
                         <MDBDropdownItem
                           onClick={()=> {this.props.onSearchSettingModalShow(true)}}
                         >
                           Search Setting
                         </MDBDropdownItem>
 
-                        <MDBDropdownItem>Report</MDBDropdownItem>
-                        
                         <MDBDropdownItem
-                          onClick={()=> {this.props.onProfileModalShow(true)}}
+                          onClick={()=> {this.props.onReportModalShow(true)}}
+                          disabled={typeof this.props.targetUser.id == 'undefined' ? true : false }
                         >
-                          Your Profile
+                          Report
                         </MDBDropdownItem>
+                        
+                        
                         <MDBDropdownItem divider />
                         
-                        <MDBDropdownItem>
+                        <MDBDropdownItem
+                          onClick={this.props.logOut}
+                        >
                           Log Out
                         </MDBDropdownItem> 
 
@@ -312,21 +374,51 @@ export default class ChatBox extends Component {
                       />
                       
                       <Editor
+                        ref={this.setDomEditorRef}
                         editorState={this.state.editorState}
+                        placeholder="Type a message..."
                         wrapperClassName="demo-wrapper"
                         toolbarClassName={this.state.toolbar_show ? '' : 'toggle-toolbar'}
                         editorClassName="demo-editor"
                         keyBindingFn={this.keyBindingFunction.bind(this)}
                         onEditorStateChange={this.onEditorStateChange}
-                        onChange={this.onEditorChange.bind(this)}
+                        // onChange={this.onEditorChange.bind(this)}
                         toolbar={{
-                          options: ['inline', 'image', 'colorPicker', 'fontSize', 'fontFamily', 'emoji', 'history'],
-                          inline: { inDropdown: true },
+                          options: ['inline', 'colorPicker', 'fontSize', 'fontFamily',],
+                          inline: { 
+                              inDropdown: false, 
+                              options: ['bold', 'italic', 'underline'], 
+                          },
                           image: { uploadEnabled: true},
                           inputAccept: 'image/gif,image/jpeg,image/jpg,image/png,image/svg',
+                          fontSize: {
+                            options: [8, 9, 10, 11, 12, 14, 16, 18, 20]
+                          },
                         }}
-                        autoFocus
                       />
+                      
+                      {this.state.showColorPicker ? 
+                      <div>
+                        <SketchPicker 
+                          color={ this.state.pickerColor }
+                          onChangeComplete={ this.handleChangeComplete.bind(this) }
+                        />
+                        <button className="color-confirm" onClick={this.onApplyColorPicker.bind(this)}>Apply</button>
+                        <button className="color-cancel" onClick={this.hideColorPicker.bind(this)}>Cancel</button>
+                        <div className="color-picker-hide" onClick={this.hideColorPicker.bind(this)}></div>
+                      </div>
+                      :
+                      null}
+                      
+
+                      {this.state.toolbar_show ? 
+                        <button className="color-picker-toggle" onClick={this.toggleColorPicker.bind(this)}>
+                          <i className="fas fa-eye-dropper"></i>
+                        </button>
+                      : null}
+                      
+                      
+
                       
                       <label htmlFor="attachFile" className="attach-file">
                         <i 
@@ -350,7 +442,7 @@ export default class ChatBox extends Component {
                         >
                           {/* <FontAwesomeIcon icon={faPaperPlane} color="white" /> */}
                           {/* <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="paper-plane" class="svg-inline--fa fa-paper-plane fa-w-16 " role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" color="white"><path fill="currentColor" d="M476 3.2L12.5 270.6c-18.1 10.4-15.8 35.6 2.2 43.2L121 358.4l287.3-253.2c5.5-4.9 13.3 2.6 8.6 8.3L176 407v80.5c0 23.6 28.5 32.9 42.5 15.8L282 426l124.6 52.2c14.2 6 30.4-2.9 33-18.2l72-432C515 7.8 493.3-6.8 476 3.2z"></path></svg> */}
-                          <svg class="jss4" focusable="false" viewBox="0 0 24 24" aria-hidden="true" role="presentation"><path fill="#fff" d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path><path fill="none" d="M0 0h24v24H0z"></path></svg>
+                          <svg className="jss4" focusable="false" viewBox="0 0 24 24" aria-hidden="true" role="presentation"><path fill="#fff" d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path><path fill="none" d="M0 0h24v24H0z"></path></svg>
                         </div>
                       </InputGroup.Button>
 
@@ -360,10 +452,15 @@ export default class ChatBox extends Component {
             ) : (
               <div className="waiting-container">
                 <div className="title-box">
-                  <h1>Hello, {this.props.signedInUser.userName}!</h1><br></br>
+                  <h2>Welcome, {this.props.signedInUser.userName}!</h2><br></br>
                 </div>
                 <div className="body-box">
-                  <p>Select a friend to start a chat.</p>
+                  <p 
+                    className="select-friend"
+                    onClick={this.findTargetUser.bind(this)}
+                  >
+                      Select a friend to start a chat.
+                  </p>
                 </div>
               </div>
             )}

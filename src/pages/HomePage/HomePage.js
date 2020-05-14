@@ -23,7 +23,7 @@ class FullPageIntroWithFixedTransparentNavbar extends React.Component {
     return (
       <div>
         <header>
-          <Router>
+            
             <MDBNavbar color="bg-primary" fixed="top" dark expand="md" scrolling transparent>
               <MDBContainer size="md">            
                 <MDBNavbarBrand href="/">
@@ -34,18 +34,12 @@ class FullPageIntroWithFixedTransparentNavbar extends React.Component {
                   <MDBNavbarNav right>
                     <MDBNavItem>
                       <MDBNavLink to="/guest">GUEST</MDBNavLink>
-                    </MDBNavItem>
-                    <MDBNavItem>
-                      <MDBNavLink to="/login">SIGN IN</MDBNavLink>
-                    </MDBNavItem>
-                    <MDBNavItem>
-                      <MDBNavLink to="/register">SIGN UP</MDBNavLink>
-                    </MDBNavItem>                    
+                    </MDBNavItem>                   
                   </MDBNavbarNav>
                 </MDBCollapse>
               </MDBContainer>
             </MDBNavbar>
-          </Router>
+            
 
           <MDBView src={process.env.PUBLIC_URL + '/background.jpg'}>
             <MDBMask overlay="purple-light" className="flex-center flex-column text-white text-center">
@@ -57,12 +51,7 @@ class FullPageIntroWithFixedTransparentNavbar extends React.Component {
                   <MDBBtn color="secondary" size="lg">
                     <MDBIcon icon="user-shield" className="mr-1" size="lg" /> Chat as a guest
                   </MDBBtn>
-                </MDBNavLink>
-                <MDBNavLink to="/usersign">
-                  <MDBBtn color="primary" size="lg">
-                    <MDBIcon icon="user" className="mr-1" size="lg" /> Login as a user
-                  </MDBBtn>
-                </MDBNavLink>            
+                </MDBNavLink>      
               </div>              
             </MDBMask>
           </MDBView>

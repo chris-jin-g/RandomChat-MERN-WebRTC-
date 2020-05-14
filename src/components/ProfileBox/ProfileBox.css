@@ -5,6 +5,7 @@
     right: -15px;
     width: 350px;
     height: 100%;
+    z-index: 2;
     animation-name: profile-container;
     animation-duration: 0.5s;
 }
@@ -40,7 +41,7 @@
 
 .jumbotron {
     padding: 20px 5px 0px 5px;
-    height: calc( 100vh - 160px);
+    height: calc( 100vh - 75px);
     overflow: auto;
 }
 

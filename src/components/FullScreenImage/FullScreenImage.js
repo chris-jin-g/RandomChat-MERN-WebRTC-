@@ -1,13 +1,4 @@
 import React, { Component } from "react";
-import {
-    MDBJumbotron,
-    MDBBtn,
-    MDBRow,
-    MDBCol,
-    MDBCardTitle,
-    MDBCardBody,
-    MDBCloseIcon
-  } from 'mdbreact';
 import 'rc-slider/assets/index.css';
 
 import "./FullScreenImage.css";

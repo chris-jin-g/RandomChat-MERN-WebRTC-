@@ -2,21 +2,13 @@ import React, { Component } from "react";
 import {
     MDBJumbotron,
     MDBBtn,
-    MDBContainer,
     MDBRow,
     MDBCol,
-    MDBCardTitle,
-    MDBIcon,
-    MDBNavLink,
-    MDBNav,
-    MDBCardImage,
     MDBCardBody,
-    MDBCardText,
     MDBInput,
     MDBInputSelect,
     MDBCloseIcon
   } from 'mdbreact';
-import jwt_decode from "jwt-decode";
 
 import { RESTAPIUrl } from '../../config/config';
 import { setInStorage } from "../../utils/storage";
@@ -33,6 +25,11 @@ export default class ChatBox extends Component {
         
         this.state = {
             imageURL: `${RESTAPIUrl}/public/profile/${this.props.profileInfo.profile_image}`,
+            userName: this.props.profileInfo.userName,
+            age: this.props.profileInfo.age,
+            location: this.props.profileInfo.location,
+            gender: this.props.profileInfo.gender,
+            imageHash: this.props.imageHash
         }
 
         this.handleUploadImage = this.handleUploadImage.bind(this);
@@ -50,7 +47,8 @@ export default class ChatBox extends Component {
         data.append('file', this.uploadInput.files[0]);
         data.append('fileName', this.fileName.value);
         console.log("upload file name", this.fileName.value);
-        fetch(`${RESTAPIUrl}/api/profile`, {
+        
+        fetch(`${RESTAPIUrl}/api/profile/image`, {
           method: 'POST',
           body: data,
         })
@@ -59,9 +57,11 @@ export default class ChatBox extends Component {
             console.log('this is json object', json);
             if(json.status) {
                 setInStorage('guest_signin', {token:json.token});
-                let decoded_token = jwt_decode(json.token);
-                let signedInUser = decoded_token.user;
-                this.props.onChangeProfile(signedInUser);       
+                this.props.updateProfile();
+                this.setState({imageHash: Date.now()});
+                // let decoded_token = jwt_decode(json.token);
+                // let signedInUser = decoded_token.user;
+                // this.props.onChangeProfile(signedInUser);       
             } else {
                 alert("Server Error");
             }
@@ -75,19 +75,58 @@ export default class ChatBox extends Component {
         // });
     }
 
-    handleChangeProfile() {
-        console.log("bind this");
+    handleChangeProfile(e) {
+        e.preventDefault();
+        console.log("profile update setting", this.props.profileInfo);
+        const { userName, location, age, gender } = this.state;
+        const { _id } = this.props.profileInfo;
+        this.setState ({ 
+            loginLoading: true, 
+        });
+
+        fetch(RESTAPIUrl + '/api/profile/update', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            _id,
+            userName,
+            location,
+            age,
+            gender
+        }),
+        }).then(res =>res.json())
+        .then(json => {
+            console.log('this is json object', json);
+            if(json.status) {
+                setInStorage('guest_signin', {token:json.token});
+                this.props.updateProfile();
+                this.props.onProfileModalShow(false);
+            } else {
+                alert("Server Error");
+            }
+        });
     }
 
     onProfileModalShow() {
         this.props.onProfileModalShow(false);
     }
     
-    handleChangeLocation() {
+    handleChangeName(e) {
+        this.setState({ userName: e.target.value });
     }
-    
-    handleChangeGender() {
 
+    handleChangeLocation(e) {
+        this.setState({ location: e.target.value });
+    }
+
+    handleChangeAge(value) {
+        this.setState({ age: value });
+    }
+
+    handleChangeGender(e) {
+        this.setState({ gender: e.target.value });
     }
 
     render() {
@@ -103,8 +142,9 @@ export default class ChatBox extends Component {
                                 <form onSubmit={this.handleChangeProfile}>
                                     <div className="profile-image">
                                         <img
-                                            src={`${RESTAPIUrl}/public/profile/${this.props.profileInfo.profile_image}`}
+                                            src={`${this.state.imageURL}?${this.state.imageHash}`}
                                             className='img-fluid'
+                                            alt="profile-img"
                                         />
                                         <div className="upload-button">
                                             <label htmlFor="imageUpload"></label>
@@ -132,11 +172,12 @@ export default class ChatBox extends Component {
                                             label="Your Name" 
                                             ref={(ref) => { this.userName = ref; }}
                                             group type="text" 
-                                            onChange={this.handleChangeName} 
+                                            onChange={this.handleChangeName.bind(this)} 
                                             validate error="wrong" 
                                             success="right"
-                                            value={this.props.profileInfo.userName}
+                                            value={this.state.userName }
                                             required
+                                            disabled
                                         />
                                         
                                         <label className="form-label" >Your Location</label>
@@ -144,7 +185,7 @@ export default class ChatBox extends Component {
                                             className="browser-default custom-select" 
                                             id="location" 
                                             name="location" 
-                                            value={this.props.profileInfo.location} 
+                                            value={this.state.location} 
                                             onChange={this.handleChangeLocation.bind(this)} 
                                         >
                                             <option>Choose your location</option>
@@ -159,22 +200,22 @@ export default class ChatBox extends Component {
                                         <MDBInputSelect  
                                             id="age" 
                                             name="age" 
-                                            getValue={this.handleChangeAge} 
+                                            getValue={this.handleChangeAge.bind(this)} 
                                             min={13} 
                                             max={99} 
-                                            value={this.props.profileInfo.age} 
+                                            value={this.state.age } 
                                             className='mb-2' 
                                         />
                                         
                                         <label className="form-label">Your Gender</label>
                                         <div className="radio-group">
                                             <div className="radio">
-                                                <input id="radio-1" name="radio" type="radio" value="Male" onChange={this.handleChangeGender.bind(this)} checked={this.state.gender === 'Male'} />
+                                                <input id="radio-1" name="radio" type="radio" value="Male" onChange={this.handleChangeGender.bind(this)} checked={this.state.gender === 'Male'} disabled/>
                                                 <label htmlFor="radio-1" className="radio-label">Male</label>
                                             </div>
 
                                             <div className="radio">
-                                                <input id="radio-2" name="radio" type="radio" value="Female" onChange={this.handleChangeGender.bind(this)} checked={this.state.gender === 'Female'} />
+                                                <input id="radio-2" name="radio" type="radio" value="Female" onChange={this.handleChangeGender.bind(this)} checked={this.state.gender === 'Female'} disabled/>
                                                 <label  htmlFor="radio-2" className="radio-label">Female</label>
                                             </div>  
                                         </div>
