@@ -78,7 +78,7 @@ class GuestSign extends React.Component {
   render() {
     return (
         <MDBRow>
-          <MDBCol sm="10" md="7" lg="6" xl="4" className="mx-auto mt-3">
+          <MDBCol sm="10" md="7" lg="6" xl="4" className="mx-auto mt-3 sign-container">
             <form onSubmit={this.handleSubmit}>
               <MDBCard>
               <div className="text-center sign-title">

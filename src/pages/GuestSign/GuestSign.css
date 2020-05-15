@@ -67,6 +67,9 @@ select {
     border: none !important;
 }
 
-form {
-    margin-top: 25%;
+.sign-container {
+    position: absolute;
+    left: 50%;
+    top: 40%;
+    transform: translate(-50%, -50%);
 }

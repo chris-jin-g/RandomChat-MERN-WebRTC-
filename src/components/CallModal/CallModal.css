@@ -1,9 +1,9 @@
 .call-modal {
     position: absolute;
-    width: 400px;
+    width: 250px;
     padding: 20px;
-    left: calc(50vw - 200px);
-    top: calc(50vh - 60px);
+    left: calc(50vw - 125px);
+    top: calc(50vh - 200px);
     background: -webkit-linear-gradient(top, #074055 0%, #030D10 100%);
     background: -moz-linear-gradient(top, #074055 0%, #030D10 100%);
     background: -o-linear-gradient(top, #074055 0%, #030D10 100%);
@@ -26,6 +26,8 @@
     -moz-animation: blinking 3s infinite linear;
     -o-animation: blinking 3s infinite linear;
     animation: blinking 3s infinite linear;
+    text-align: center;
+    text-align: -webkit-center;
 }
 
 @keyframes blinking {
@@ -45,11 +47,11 @@
 
 .video-control .btn-action,
 .call-modal .btn-action {
-    height: 50px;
-    width: 50px;
-    line-height: 50px;
+    height: 40px;
+    width: 40px;
+    line-height: 10px;
     margin: 0px 8px;
-    font-size: 1.4em;
+    font-size: 1.2em;
     text-align: center;
     border-radius: 50%;
     cursor: pointer;
@@ -74,7 +76,7 @@
 }
 
 .call-modal .btn-action:not(.hangup) {
-    background-color: #7FBA00;
+    background-color: rgb(76, 175, 80);
 }
 
 .call-modal button {
@@ -85,15 +87,24 @@
     width: 100px;
     height: 100px;
     border-radius: 50%;
+    overflow: hidden;
+    margin: 30px 0px;
+}
+
+.target-avatar img {
+    width: 100%;
+    height: 100%;
 }
 
 .call-modal span.caller {
     color: white;
-    font-size: 20px;
+    font-size: 18px;
     font-weight: 500;
 }
 
 .incoming {
+    display: block;
     font-size: 14px;
     color: rgb(150, 150, 150);
+    margin-bottom: 20px;
 }

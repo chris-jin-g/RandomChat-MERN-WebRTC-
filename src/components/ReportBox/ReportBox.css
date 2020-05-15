@@ -1,4 +1,4 @@
-.report-container {
+.report-container-true {
     position: fixed;
     margin: 0px;
     top: 74px;
@@ -8,6 +8,10 @@
     z-index: 2;
     animation-name: search-container;
     animation-duration: 0.5s;
+}
+
+.report-container- {
+    display: none;
 }
 
 form {
@@ -23,7 +27,7 @@ form {
     }
 }
 
-.report-container-hide {
+.report-container-false {
     position: fixed;
     margin: 0px;
     top: 74px;

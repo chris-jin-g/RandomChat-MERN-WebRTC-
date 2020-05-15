@@ -67,9 +67,9 @@ class App extends Component {
       userChatData: '', // this contains users from which signed-in user can chat and its message data.
       user: null, // Signed-In User
       selectedUserIndex: 1,
-      profileModalShow: false,
-      searchModalShow: false,
-      reportModalShow:false,
+      profileModalShow: '',
+      searchModalShow: '',
+      reportModalShow: '',
       error: false,
       errorMessage: "",
       targetUser: '',
@@ -625,17 +625,17 @@ class App extends Component {
           iamgeHash={this.state.imageHash}
           onChangeProfile={this.changeProfile.bind(this)}
           onProfileModalShow={this.onProfileModalShow.bind(this)}
-          profileContainer={this.state.profileModalShow ? 'profile-container' : 'profile-container-hide' }
+          profileContainer={ `profile-container-${this.state.profileModalShow}` }
           updateProfile={this.updateProfile.bind(this)}
         />
         <SearchSettingBox
-          searchContainer={this.state.searchModalShow ? 'search-container' : 'search-container-hide'}
+          searchContainer={ `search-container-${this.state.searchModalShow}` }
           searchSetting={this.state.searchSetting}
           onSearchSettingModalShow={this.onSearchSettingModalShow.bind(this)}
         />
 
         <ReportBox
-          reportContainer={this.state.reportModalShow ? 'report-container' : 'report-container-hide'}
+          reportContainer={ `report-container-${this.state.reportModalShow}` }
           onReportModalShow={this.onReportModalShow.bind(this)}
           signedInUser={this.state.signedInUser}
           targetUser={this.state.targetUser}

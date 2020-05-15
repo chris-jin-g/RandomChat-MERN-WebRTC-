@@ -1,4 +1,4 @@
-.search-container {
+.search-container-true {
     position: fixed;
     margin: 0px;
     top: 74px;
@@ -10,6 +10,10 @@
     animation-duration: 0.5s;
 }
 
+.search-container- {
+    display: none;
+}
+
 @keyframes search-container {
     0% {
         right: -400px
@@ -19,7 +23,7 @@
     }
 }
 
-.search-container-hide {
+.search-container-false {
     position: fixed;
     margin: 0px;
     top: 74px;
