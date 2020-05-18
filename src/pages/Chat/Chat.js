@@ -113,6 +113,7 @@ class App extends Component {
    */
 
   componentDidMount() {
+    this.verifyAccount();
     this.initAxios();
     this.initSocketConnection();
     this.createSocketRoom();
@@ -135,6 +136,27 @@ class App extends Component {
 
       }) ; 
     }
+  }
+
+  verifyAccount() {
+    const obj = getFromStorage('guest_signin');
+    
+    fetch(RESTAPIUrl + '/api/guest/verify', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        token: obj.token
+      }),
+    })
+    .then(res =>res.json())
+    .then(json => {
+      if(!json.status) {
+        localStorage.clear();
+        this.props.history.push("/");
+      }
+    })
   }
 
   initSocketConnection() {

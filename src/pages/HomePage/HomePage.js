@@ -1,6 +1,7 @@
 import React from 'react';
 import { MDBNavbar, MDBNavbarBrand, MDBNavbarNav, MDBNavbarToggler, MDBCollapse, MDBNavItem, MDBNavLink, MDBContainer, MDBMask, MDBView, MDBBtn, MDBIcon } from 'mdbreact';
 import { BrowserRouter as Router } from 'react-router-dom';
+import { RESTAPIUrl} from "../../config/config";
 import './HomePage.css';
 
 class FullPageIntroWithFixedTransparentNavbar extends React.Component {
@@ -9,8 +10,32 @@ class FullPageIntroWithFixedTransparentNavbar extends React.Component {
     this.state = {
       collapse: false,
       isWideEnough: false,
+      restricted: false
     };
     this.onClick = this.onClick.bind(this);
+  }
+  
+  componentDidMount() {
+    this.verifyAccount();
+  }
+
+  verifyAccount() {    
+    fetch(RESTAPIUrl + '/api/guest/ipverify', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+      }),
+    })
+    .then(res =>res.json())
+    .then(json => {
+      if(!json.status) {
+        this.setState({restricted: true});
+      }else {
+        this.setState({restricted: false});
+      }
+    })
   }
 
   onClick() {
@@ -33,7 +58,12 @@ class FullPageIntroWithFixedTransparentNavbar extends React.Component {
                 <MDBCollapse isOpen={this.state.collapse} navbar>
                   <MDBNavbarNav right>
                     <MDBNavItem>
-                      <MDBNavLink to="/guest">GUEST</MDBNavLink>
+                      <MDBNavLink 
+                        to="/guest"
+                        disabled={this.state.restricted}
+                      >
+                        GUEST
+                      </MDBNavLink>
                     </MDBNavItem>                   
                   </MDBNavbarNav>
                 </MDBCollapse>
@@ -47,12 +77,19 @@ class FullPageIntroWithFixedTransparentNavbar extends React.Component {
               <h5>It provides free random chat with cool people in private chat rooms.</h5>
               <p>Chat with strangers & send pictures, videos in private free chat rooms. Meet & talk to strangers from all over the world.</p><br />      
               <div className="btn-group">
-                <MDBNavLink to="/guest">
-                  <MDBBtn color="secondary" size="lg">
+                <MDBNavLink 
+                  to={ !this.state.restricted? "/guest" : '/#'}
+                >
+                  <MDBBtn 
+                    color="secondary" 
+                    size="lg"
+                    disabled={this.state.restricted}
+                  >
                     <MDBIcon icon="user-shield" className="mr-1" size="lg" /> Chat as a guest
                   </MDBBtn>
-                </MDBNavLink>      
-              </div>              
+                </MDBNavLink>                    
+              </div>
+              {this.state.restricted ? <p className="verify-alert" >Your ip address is restricted from this chat</p> : null}
             </MDBMask>
           </MDBView>
         </header>

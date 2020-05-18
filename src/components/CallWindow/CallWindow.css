@@ -21,7 +21,7 @@
     overflow: hidden;
     height: 60px;
     width: auto;
-    right: 140px;
+    right: 60px;
     top: 7px;
     border: 1px solid grey;
     border-radius: 9px;
@@ -98,4 +98,8 @@ button.hangup {
     transition-duration: .25s;
 }
 
-@media only screen and (max-width: 768px) {}
+@media only screen and (max-width: 768px) {
+    .video-user {
+        right: 47px;
+    }
+}

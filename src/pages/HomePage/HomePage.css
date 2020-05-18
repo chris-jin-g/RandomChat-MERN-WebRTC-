@@ -11,3 +11,7 @@ strong h2 {
 .btn-group a {
     display: inline-block;
 }
+
+.verify-alert {
+    color: red;
+}

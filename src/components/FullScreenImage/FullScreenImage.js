@@ -14,7 +14,6 @@ export default class FullScreenImage extends Component {
     }
 
     componentDidMount() {
-        console.log("this is fullscreen image's path", this.state);
     }
     onShowImageFullScreen() {
         this.props.onShowImageFullScreen();
@@ -30,7 +29,7 @@ export default class FullScreenImage extends Component {
                     >
                         X
                     </span>
-                    <a href={this.state.downloadPath} download="image-file" className="download-btn">
+                    <a href={this.props.imageUrl} download="image-file" className="download-btn">
                         <i class="fa fa-download"></i>
                     </a>
                     <img src={this.props.imageUrl} alt=""></img>

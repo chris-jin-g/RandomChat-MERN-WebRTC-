@@ -8,6 +8,9 @@ import UserSign from '../pages/UserSign/UserSign';
 import GuestSign from '../pages/GuestSign/GuestSign';
 import Chat from '../pages/Chat/Chat';
 
+import AdminSign from '../pages/AdminSign/AdminSign';
+import AdminManage from '../pages/AdminManage/AdminManage';
+
 const fakeAuth = () => {
   const obj = getFromStorage('guest_signin');
   
@@ -65,6 +68,8 @@ class Routes extends React.Component {
         <PrivateRoute path="/usersign" component={ UserSign } />
         <PrivateRoute path="/guest" component={ GuestSign } />
         <PrivateChatRoute path="/chat" component={ Chat } />
+        <Route exact path="/admin" component={ AdminSign } />
+        <Route path="/admin/manage" component= { AdminManage } />
       </Switch>
     );
   }

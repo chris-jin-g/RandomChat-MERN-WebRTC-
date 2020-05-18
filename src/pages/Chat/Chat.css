@@ -523,6 +523,11 @@
         border: 1px solid #80bdff;
     }
     
+    .rdw-editor-main img {
+        max-width: 120px;
+        height: auto;
+    }
+    
     .public-DraftStyleDefault-block {
         margin: 0px;
     }
