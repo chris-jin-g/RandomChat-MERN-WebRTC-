@@ -657,6 +657,42 @@
     .select-friend:hover {
         transform: scale(1.1);
     }
+    /* Close window modal */
+    
+    .close-window {
+        position: absolute;
+        left: 50%;
+        top: 130px;
+        width: 350px;
+        height: auto;
+        z-index: 3;
+        transform: translate(-50%, -50%);
+        background-color: white;
+        border: 0;
+        border-radius: .125rem;
+        box-shadow: 0 5px 11px 0 rgba(0, 0, 0, 0.18), 0 4px 15px 0 rgba(0, 0, 0, 0.15);
+        padding: 20px 20px 10px 20px;
+    }
+    
+    .close-window span {
+        display: block;
+    }
+    
+    .close-window .button-wrapper {
+        display: flex;
+        justify-content: space-around;
+        margin-top: 10px;
+    }
+    
+    .hide-comp {
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: rgba(0, 0, 0, 0.2);
+        z-index: 2;
+    }
     
     @media only screen and (max-width: 1600px) {
         .user-list-sidebar {

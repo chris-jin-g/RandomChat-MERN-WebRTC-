@@ -32,6 +32,7 @@ import PeerConnection from './PeerConnection';
 // import CallModal from './CallModal';
 import CallWindow from '../../components/CallWindow/CallWindow';
 import CallModal from '../../components/CallModal/CallModal';
+import { MDBBtn } from "mdbreact";
 /**
  * App Component
  *
@@ -64,7 +65,7 @@ class App extends Component {
     this.state = {
       signInModalShow: false,
       users: [], // Avaiable users for signing-in
-      userChatData: '', // this contains users from which signed-in user can chat and its message data.
+      userChatData: {}, // this contains users from which signed-in user can chat and its message data.
       user: null, // Signed-In User
       selectedUserIndex: 1,
       profileModalShow: '',
@@ -83,6 +84,7 @@ class App extends Component {
       },
       onTyping: false,
       showImageFullScreen: false,
+      confirmRemoveOldSession: false,
       imageHash: Date.now(),
 
       // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -235,7 +237,6 @@ class App extends Component {
    * Get target user to chat
    */
   findTargetUser() {
-    
     let findTargetQuery = {
         blackUsersList: this.state.blackUsersList,
         searchSetting: this.state.searchSetting,
@@ -245,14 +246,30 @@ class App extends Component {
     this.socket.emit("find_target", findTargetQuery);
   }
 
+  onRemoveOldSession() {
+    this.setState({
+      confirmRemoveOldSession: true,
+      targetUser: '',
+      userChatData: {}
+    },() => {
+      this.socket.emit('confirm_remove_old_session', this.state.signedInUser); 
+    });       
+  }
+
+  onConfirmRemoveOldSession() {
+    // this.socket.emit('confirm_remove_old_session', this.state.signedInUser);
+    localStorage.clear();
+    this.setState({confirmRemoveOldSession: false});
+    
+    this.props.history.push("/");
+  }
+
   onFindTargetUser(targetUser) {
-    console.log("this is target user",targetUser);
     // Add current target user to black user list
-    if(this.state.targetUser) {
-      let blackUsersList = this.state.blackUsersList;
-      blackUsersList.push(this.state.targetUser._id);
-      this.setState({blackUsersList});
-    }
+    let blackUsersList = this.state.blackUsersList;
+    blackUsersList.push(targetUser._id);
+    this.setState({blackUsersList});
+    
     let userChatData = {
         id: targetUser._id,
         name: targetUser.userName,
@@ -261,19 +278,24 @@ class App extends Component {
         location: targetUser.location,
         age: targetUser.age
     }
-    this.setState({ targetUser });
-    this.setState({userChatData});
     
-    let message = {
-      to: this.state.signedInUser._id,
-      message: {
-        type: "text",
-        text: `<span style="color: blue;">You are now connected to ${this.state.targetUser.userName}<br>${this.state.targetUser.gender} ${this.state.targetUser.age} ${this.state.targetUser.location}</span>`,
-        className: "message"
-      },
-      from: this.state.targetUser._id
-    };
-    this.socket.emit("message", message);
+    // this.setState({userChatData});
+    this.setState({ userChatData,targetUser }, () => {
+      let message = {
+        to: this.state.signedInUser._id,
+        message: {
+          type: "text",
+          date: +new Date(),
+          text: `<span style="color: blue;">You are now connected to ${this.state.targetUser.userName}<br>${this.state.targetUser.gender} ${this.state.targetUser.age} ${this.state.targetUser.location}</span>`,
+          className: "message"
+        },
+        from: this.state.targetUser._id
+      };
+      this.socket.emit("message", message);
+    });
+    
+    // This is used for backed global variable (target_id     )
+    this.socket.emit("confirm-find_target", this.state.targetUser);
   }
 
   onSearchNone() {
@@ -285,6 +307,7 @@ class App extends Component {
   }
 
   onAvailableNone() {
+    console.log("already contacted with all users");
     NotificationManager.error(
       `You have already contacted with all online users. Try search again`
     );
@@ -308,6 +331,7 @@ class App extends Component {
     this.socket.on("reconnect", this.onReconnection.bind(this));
     this.socket.on("disconnect", this.onClientDisconnected.bind(this));
     //////
+    this.socket.on("remove_old_session", this.onRemoveOldSession.bind(this));
     this.socket.on("find_target", this.onFindTargetUser.bind(this));
     this.socket.on("search-none", this.onSearchNone.bind(this));
     this.socket.on("available-none", this.onAvailableNone.bind(this));
@@ -354,8 +378,8 @@ class App extends Component {
 
   onMessageRecieved(message) {
       // console.log("this is message response", message);
-    let userChatData = this.state.userChatData;    
-    let messageData = message.message;
+    var userChatData = this.state.userChatData;    
+    var messageData = message.message;
     var messageDataText = messageData.text;
     
     if(messageDataText === '<p></p>\n')
@@ -393,7 +417,6 @@ class App extends Component {
     // let targetIndex = userChatData.findIndex(u => u.id === targetId);
     // messageData.renderAddCamp = this.customeRenderAddCamp;
     messageData.alert = false;
-
     if (!userChatData.messages) {
       userChatData.messages = [];
     } else {
@@ -414,7 +437,7 @@ class App extends Component {
     }
     userChatData.messages.push(messageData);
     this.setState({ userChatData });
-    console.log("This is state for this component",this.state);
+    // console.log("This is state for this component",this.state);
 
 
     // Scroll to bottom when receiving the new message
@@ -528,18 +551,22 @@ class App extends Component {
           }          
         }, 2000);
       } else {
-        console.log("@@@@@@@***********")        
+             
       }
     }
     
   }
 
   onTargetDisconnect() {
-    NotificationManager.error(
-      `${this.state.targetUser.userName} disconnected from this chat room.`
-    );
+    if(this.state.targetUser !== '' ) {
+      NotificationManager.error(
+        `${this.state.targetUser.userName} disconnected from this chat room.`
+      );
+    }
+    
     this.setState({targetUser: ''});
-    this.setState({ userChatData: {}});    
+    this.setState({ userChatData: {}});
+    this.socket.emit("confirm-target-disconnect");   
   }
 
   updateProfile() {
@@ -560,7 +587,6 @@ class App extends Component {
   }
 
   logOut() {
-    console.log("log out call");
     this.socket.emit('log-out', signedInUser);
   }
 
@@ -573,8 +599,17 @@ class App extends Component {
     NotificationManager.error(
       `${this.state.targetUser.userName} log out.`
     );
-    this.setState({targetUser: ''});
-    this.setState({ userChatData: {}});  
+
+    let blackUsersList = this.state.blackUsersList;
+    let targetIndex = blackUsersList.indexOf(this.state.targetUser._id);
+      blackUsersList.splice(targetIndex, targetIndex+1 );
+  
+    this.setState({
+      targetUser: '',
+      userChatData: {},
+      blackUsersList: blackUsersList
+    });
+    this.socket.emit("confirm-target-logout");
   }
   // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
   startCall(isCaller, targetUserID, config) {
@@ -697,7 +732,27 @@ class App extends Component {
             contactUser={this.state.targetUser.userName}
             userAvatar={this.state.targetUser.profile_image}
           />
-        ): null}     
+        ): null}
+
+        {this.state.confirmRemoveOldSession ? (
+          <div>
+            <div className="hide-comp"></div>
+            <div className="close-window">
+              <span>You are signed in another location and disconnect old session.</span>
+              <div className="button-wrapper">
+                <MDBBtn
+                  size="sm"
+                  color="primary"
+                  onClick={this.onConfirmRemoveOldSession.bind(this)}
+                >
+                  Confirm
+                </MDBBtn>
+              </div> 
+            </div>
+          </div>
+        ):
+        null
+        } 
 
       </div>
     );

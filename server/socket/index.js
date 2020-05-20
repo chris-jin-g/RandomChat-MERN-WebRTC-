@@ -11,9 +11,8 @@ function initSocket(client) {
     let target_id;
     client.on("create_room", e => {
         id = e._id;
-        console.log("new room create")
         client.join(e._id);
-        console.log(e._id);
+
         User.findOneAndUpdate({
             ip_address: e.ip_address
         }, {
@@ -24,14 +23,16 @@ function initSocket(client) {
         }, {
             new: true
         }, function() {
-            console.log("Set user online and connected user with other.")
+            client.broadcast.to(e._id).emit('remove_old_session');
         });
     });
+
     // Find target user with blackUsers list and filter settings
     client.on("find_target", e => {
         var blackUsersList = e.blackUsersList;
         var signedInUser = e.signedInUser;
         var prevTargetUser = e.prevTargetUser;
+
         if (e.searchSetting.location == '') {
             var location = {};
         } else {
@@ -49,28 +50,20 @@ function initSocket(client) {
         let online = { online: true };
         let isDeleted = { isDeleted: false };
         let connected_other = { connected_other: false };
-        // var query = {};
-        // query.location = e.searchSetting.location;
-        // query.gender = e.searchSetting.gender;
-        // query.age = { $gte: e.searchSetting.ageMin };
-        // query.age = { $lte: e.searchSetting.ageMax };
-        // console.log("This is query for mongoose find", query)
 
-        // console.log("this is query gender", gender);
-        // { location: e.searchSetting.location, gender: e.searchSetting.gender }
-
-
-        User.findOneAndUpdate({
-            _id: prevTargetUser._id
-        }, {
-            $set: {
-                connected_other: false,
-            }
-        }, {
-            new: true
-        }, function() {
-            client.to(prevTargetUser._id).emit('ignore', { status: 'ignore' });
-        });
+        User
+            .find({
+                $or: [
+                    { _id: signedInUser._id },
+                    { _id: prevTargetUser._id }
+                ]
+            }).updateMany({
+                $set: {
+                    connected_other: false,
+                }
+            }, (err, user) => {
+                client.to(prevTargetUser._id).emit('ignore', { status: 'ignore' });
+            });
 
         User.find({
                 $and: [
@@ -86,69 +79,54 @@ function initSocket(client) {
             function(err, docs) {
                 if (!err) {
                     console.log("Filtered user's number:", docs.length);
-                    console.log(docs[0]);
-                    if (docs.length == 1) {
+
+                    if (docs.length == 0) {
                         // Send message that there is none to find
                         client.emit('search-none');
                     } else {
-                        // Remove users who contacted before
-                        var available_user = [];
-
-                        // docs.forEach(function(doc) {
-                        //     let blackNum = 0;
-                        //     blackUsersList.forEach(function(entry) {
-                        //         if (doc._id == entry) {
-                        //             blackNum = 1;
-                        //             // break;
-                        //             // available_user.push(doc);
-                        //             // console.log("avai@@@@@", available_user);
-                        //         }
-                        //     });
-                        //     if (blackNum == 0) {
-                        //         available_user.push(doc);
-                        //     }
-                        // });
-                        for (let i = 0; i < docs.length; i++) {
-                            let blackNum = 0;
-                            for (let j = 0; j < blackUsersList.length; j++) {
-                                if (docs[i]._id == blackUsersList[j])
-                                    blackNum = 1;
-                            }
-                            if (blackNum == 0) {
-                                available_user.push(docs[i]);
-
-                            }
-                        }
-                        console.log("available user Number", available_user.length);
-                        // console.log(blackUsersList);
-                        if (available_user.length != 0) {
-                            let targetUser = available_user[Math.floor(Math.random() * available_user.length)];
-                            console.log("signed In User information", signedInUser);
-                            console.log("user vs target", signedInUser._id, targetUser._id);
-                            // @@@@ Emit to ignored user.
-
-                            // Set previous target user to inactive
-
-                            User
-                                .find({
-                                    $or: [
-                                        { _id: signedInUser._id },
-                                        { _id: targetUser._id }
-                                    ]
-                                }).updateMany({
-                                    $set: {
-                                        connected_other: true,
-                                    }
-                                }, (err, user) => {
-                                    console.log("update part");
-                                    client.emit('find_target', targetUser);
-                                    client.to(targetUser._id).emit('find_target', signedInUser);
-                                    target_id = targetUser._id;
-                                });
-
+                        if (docs.length == 1 && docs[0]._id == signedInUser._id) {
+                            client.emit('search-none');
                         } else {
-                            client.emit('available-none');
+                            var available_user = [];
+
+                            console.log("Black user list length", blackUsersList.length, blackUsersList);
+                            for (let i = 0; i < docs.length; i++) {
+                                let blackNum = 0;
+                                for (let j = 0; j < blackUsersList.length; j++) {
+                                    if (docs[i]._id == blackUsersList[j])
+                                        blackNum = 1;
+                                }
+                                if (blackNum == 0) {
+                                    available_user.push(docs[i]);
+
+                                }
+                            }
+
+                            console.log("available user Number", available_user.length);
+                            if (available_user.length != 0) {
+                                let targetUser = available_user[Math.floor(Math.random() * available_user.length)];
+
+                                User
+                                    .find({
+                                        $or: [
+                                            { _id: signedInUser._id },
+                                            { _id: targetUser._id }
+                                        ]
+                                    }).updateMany({
+                                        $set: {
+                                            connected_other: true,
+                                        }
+                                    }, (err, user) => {
+                                        client.emit('find_target', targetUser);
+                                        client.to(targetUser._id).emit('find_target', signedInUser);
+                                    });
+
+                            } else {
+                                client.emit('available-none');
+                            }
                         }
+                        // Remove users who contacted before
+
 
                     }
                 } else {
@@ -157,6 +135,12 @@ function initSocket(client) {
             });
     });
 
+    // Set target user for global variable in backend
+    client.on("confirm-find_target", e => {
+        target_id = e._id;
+    });
+
+    // Let target user know about typing now
     client.on("on-typing", e => {
         client.to(e._id).emit('on-typing');
     });
@@ -174,7 +158,7 @@ function initSocket(client) {
 
     client.on("message", e => {
         let targetId = e.to;
-        let sourceId = client.user_id;
+        // let sourceId = client.user_id;
         // client.to(sourceId).emit('message', e);
         client.emit('message', e);
         client.to(targetId).emit('message', e);
@@ -189,6 +173,23 @@ function initSocket(client) {
         //         cli.emit("message", e);
         //     });
         // }
+    });
+
+    client.on("confirm_remove_old_session", e => {
+
+        client.leave(e._id);
+
+        User.findOneAndUpdate({
+            _id: target_id
+        }, {
+            $set: {
+                connected_other: false,
+            }
+        }, {
+            new: true
+        }, function() {
+            client.to(target_id).emit('target-logout');
+        });
     });
 
     client.on("log-out", e => {
@@ -213,9 +214,14 @@ function initSocket(client) {
             }, function() {
                 client.emit('log-out', e);
                 client.to(target_id).emit('target-logout');
+                target_id = '';
             });
             // BroadCast socket for logout and disconnect
         });
+    });
+
+    client.on("confirm-target-logout", () => {
+        target_id = '';
     });
 
     client.on('disconnect', e => {
@@ -239,10 +245,14 @@ function initSocket(client) {
                 new: true
             }, function() {
                 client.to(target_id).emit('target-disconnect');
+                target_id = '';
             });
-            // BroadCast socket for logout and disconnect
         });
     });
+
+    client.on("confirm-target-disconnect", () => {
+        target_id = '';
+    })
 
     // client.on("disconnect", function() {
     //     if (!client.user_id || !clients[client.user_id]) {

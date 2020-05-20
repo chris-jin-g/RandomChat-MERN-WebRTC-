@@ -28,8 +28,6 @@ export default class ReportBox extends Component {
 
     handleReport(e) {
         e.preventDefault();
-        console.log("this is report setting state", this.state);
-        console.log("type of target id", typeof this.props.targetUser._id);
         if( typeof this.props.targetUser._id == 'undefined' ) {            
             NotificationManager.error(
                 "Please select target user"
@@ -83,7 +81,7 @@ export default class ReportBox extends Component {
     render() {
         return ( 
             <div>
-                <MDBRow className = 'mt-5' className = { this.props.reportContainer } >
+                <MDBRow  className = {` ${this.props.reportContainer} `} >
                     <MDBCol>
                         <MDBCloseIcon onClick = { this.onReportModalShow.bind(this) }/>
 

@@ -65,6 +65,18 @@ export default class ChatBox extends Component {
     this.props.onSendClicked(draftToHtml(convertToRaw(this.state.editorState.getCurrentContent())));
     this.setState({editorState:EditorState.createEmpty()});
     this.domEditor.focusEditor();
+    // @@@@@@@@@@@@@@@@@@@@@@@
+    setTimeout(
+      function() {
+        const newState = toggleCustomInlineStyle(this.state.editorState, 'color', this.state.pickerColor);
+        this.setState({
+          editorState: newState,
+          showColorPicker: false
+        });
+      }
+      .bind(this),
+      10
+    );
   }
   
   onMessageInputChange(e) {
@@ -167,13 +179,10 @@ export default class ChatBox extends Component {
         const { editorState } = this.state;
         const convertHtml = draftToHtml(convertToRaw(editorState.getCurrentContent()));
         var subHtml = '';
-        console.log("this is convert html",convertHtml);
-        console.log("last index charactor", convertHtml.substring(convertHtml.length-5));
         // if(convertHtml.substring(convertHtml.length-5) == '</p>')
         //   subHtml = convertHtml.substring(0,(convertHtml.length-5));
         // else 
           subHtml = convertHtml.substring(0,(convertHtml.length));
-        console.log("Index and subhtml", subHtml, convertHtml.length);
         const fileContainer = `<img src="${RESTAPIUrl}/public/uploads/${json.fileName}" alt="${RESTAPIUrl}/public/uploads/${json.fileName}">`;
         const totalHtml = `${subHtml}${fileContainer}`;
 
@@ -183,7 +192,6 @@ export default class ChatBox extends Component {
         const editorStateChange = EditorState.createWithContent(contentState);
         this.setState({editorState: editorStateChange});
 
-        console.log('this is total html',totalHtml);
         // Focus editor box after file select.
         this.domEditor.focusEditor();
 

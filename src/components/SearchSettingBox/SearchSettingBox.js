@@ -40,7 +40,6 @@ export default class SearchSettingBox extends Component {
     }
 
     handleChangeLocation(e) {
-        console.log(e.target.value)
         let searchSetting = this.state.searchSetting;
         searchSetting.location = e.target.value;
         this.setState({ searchSetting });
@@ -64,7 +63,7 @@ export default class SearchSettingBox extends Component {
     render() {
         return ( 
             <div>
-                <MDBRow className = 'mt-5' className = { this.props.searchContainer } >
+                <MDBRow className = {`${this.props.searchContainer}` } >
                     <MDBCol>
                         <MDBCloseIcon onClick = { this.onSearchSettingModalShow.bind(this) }/>
 

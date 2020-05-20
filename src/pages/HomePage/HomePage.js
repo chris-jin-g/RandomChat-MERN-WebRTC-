@@ -1,6 +1,5 @@
 import React from 'react';
 import { MDBNavbar, MDBNavbarBrand, MDBNavbarNav, MDBNavbarToggler, MDBCollapse, MDBNavItem, MDBNavLink, MDBContainer, MDBMask, MDBView, MDBBtn, MDBIcon } from 'mdbreact';
-import { BrowserRouter as Router } from 'react-router-dom';
 import { RESTAPIUrl} from "../../config/config";
 import './HomePage.css';
 

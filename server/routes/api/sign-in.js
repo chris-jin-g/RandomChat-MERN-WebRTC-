@@ -224,12 +224,19 @@ module.exports = (app) => {
 
     app.post('/api/guest/signin', (req, res, next) => {
         // Get the client's IP Address
-        var ip_address = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-        ip_address = ip_address.substr(ip_address.lastIndexOf(":") + 1);
+        // var ip_address = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+        // ip_address = ip_address.substr(ip_address.lastIndexOf(":") + 1);
 
-        // var ip_address = randomip('192.168.2.0', 24);
+        var ip_address = randomip('192.168.2.0', 24);
 
         const { userName, age, gender, location } = req.body;
+
+        if (age > 99 || age < 13) {
+            return res.status(500).send({
+                status: false,
+                message: 'Validation Error: Specified attribute is not between the expected ages of 13 and 99.',
+            });
+        }
 
         User.find({
                 ip_address: ip_address,
@@ -287,6 +294,7 @@ module.exports = (app) => {
                 }
                 // Create new user with client's ip address
                 else {
+                    console.log("new user sign in ")
                     const newUser = new User();
 
                     newUser.userName = userName;
@@ -350,19 +358,24 @@ module.exports = (app) => {
 
     app.post('/api/guest/verify', (req, res, next) => {
         var decoded_token = jwt_decode(req.body.token);
-
         User.find({
                 _id: decoded_token.user._id,
             },
             (err, user) => {
-                if (user[0].isDeleted == false) {
+                if (user.length > 0) {
+                    if (user[0].isDeleted == false) {
+                        return res.send({
+                            status: true
+                        });
+                    }
                     return res.send({
-                        status: true
+                        status: false
                     });
                 }
                 return res.send({
                     status: false
-                });
+                })
+
             });
 
     });

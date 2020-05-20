@@ -17,7 +17,6 @@ module.exports = (app) => {
     });
 
     app.post('/api/admin/enable-user', (req, res, next) => {
-        console.log("admin enable user profile", req.body.user)
         User.findOneAndUpdate({
             _id: req.body.user._id,
         }, {

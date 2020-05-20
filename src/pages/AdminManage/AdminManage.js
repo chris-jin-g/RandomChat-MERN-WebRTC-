@@ -1,5 +1,5 @@
 import React from 'react';
-import { MDBRow, MDBCol, MDBInput, MDBBtn, MDBCard, MDBCardBody, MDBModalFooter, MDBDataTableV5  } from 'mdbreact';
+import { MDBCol, MDBInput, MDBBtn, MDBCard, MDBCardBody, MDBModalFooter  } from 'mdbreact';
 import 'whatwg-fetch';
 import {
     NotificationContainer,
@@ -133,15 +133,16 @@ class AdminManage extends React.Component {
           if(json.success) {
             NotificationManager.success(`${json.message}`);
             let selectedUser = json.user;
-            console.log("enable user information", selectedUser)
             this.setState({selectedUser});
 
             this.state.users.map((user, i) => {
-                if(user._id == selectedUser._id) {
+                if(user._id === selectedUser._id) {
                     let users = this.state.users;
                     users[i] = selectedUser;
                     this.setState({users});
+                    return true;
                 }
+                return false;
             })
 
           } else {
@@ -186,16 +187,15 @@ class AdminManage extends React.Component {
 
             <aside id="sidebar-wrapper" className={!this.state.toggleWrapper ? 'expand-sidebar' : 'shrink-sidebar'}>
                 <div className="sidebar-brand">
-                <h2></h2>
                 </div>
                 <ul className="sidebar-nav">
                 <li>
-                    <a href="#" onClick={this.userListShow.bind(this)}>
+                    <a href="!#"  onClick={this.userListShow.bind(this)}>
                         <i className="fa fa-tasks"></i>User Manage
                     </a>
                 </li>
                 <li>
-                    <a href="#" onClick={this.adminProfileShow.bind(this)}>
+                    <a href="!#" onClick={this.adminProfileShow.bind(this)}>
                         <i className="fa fa-user"></i>Profile
                     </a>
                 </li>
@@ -208,7 +208,7 @@ class AdminManage extends React.Component {
                     <nav className="navbar navbar-inverse">
                     <div className="container-fluid">
                         <div className="navbar-header">
-                        <a href="#" className="navbar-brand" id="sidebar-toggle">
+                        <a href="!#" className="navbar-brand" id="sidebar-toggle">
                             <i 
                                 className="fa fa-bars"
                                 onClick={this.toggleWrapper.bind(this)}    
@@ -223,8 +223,6 @@ class AdminManage extends React.Component {
 
                 {this.state.userListShow? 
                     <section className="content-wrapper user-manage">
-                        <h2></h2>
-
                         <div className="row">
                             <div className="col-xs-12 col-sm-12 col-md-12 col-lg-10 offset-lg-1">
                             {
@@ -437,13 +435,14 @@ class AdminManage extends React.Component {
                                                 <div className="report-sub-body">                                            
                                                         
                                                     {this.state.users.map((user) => {
-                                                        if(user._id == object.reporter_id) {
+                                                        if(user._id === object.reporter_id) {
                                                             return (
                                                                 <div className="report-sub-left">
                                                                     <img src={`${RESTAPIUrl}/public/profile/${user.profile_image}`} alt="reporter_img"></img><span>{user.userName}</span>
                                                                 </div>
                                                             );
                                                         }
+                                                        return null;
                                                     })}
                                                     
                                                     <div className="contact-sub-right">

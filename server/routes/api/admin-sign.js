@@ -25,7 +25,6 @@ module.exports = (app) => {
                 });
             } else {
                 const user = users[0];
-                console.log(password, user.password);
                 if (!user.validPassword(password)) {
                     return res.send({
                         success: false,

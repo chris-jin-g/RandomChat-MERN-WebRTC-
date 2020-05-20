@@ -12,8 +12,6 @@ module.exports = (app) => {
         let prevFileName = prevFileFullName.substring(0, prevFileFullName.indexOf("."));
         let prevFileType = prevFileFullName.substring(prevFileFullName.indexOf(".") + 1);
 
-        console.log(`${uploadDir}${prevFileFullName}`);
-
         // Create directory for upload file when profile directory doesn't exist in public directory
         if (!fs.existsSync(uploadDir)) {
             fs.mkdirSync(uploadDir);
@@ -21,7 +19,6 @@ module.exports = (app) => {
         // Delete prev file.
         if (fs.existsSync(`${uploadDir}${prevFileFullName}`)) {
             fs.unlink(`${uploadDir}${prevFileFullName}`, function() {
-                console.log("File deleted successsfully");
                 // Get the file type of uploaded file.
                 let fileType = profileImage.name.substring(profileImage.name.indexOf(".") + 1);
 
@@ -47,7 +44,6 @@ module.exports = (app) => {
                                 if (err) {
                                     console.log('Failed to create token', err);
                                 } else {
-                                    console.log(token);
                                     return res.status(200).send({
                                         status: true,
                                         message: "Updated profile image successfully",
@@ -68,8 +64,12 @@ module.exports = (app) => {
     });
 
     app.post('/api/profile/update', (req, res, next) => {
-
-        let prevFileFullName = req.body.fileName;
+        if (req.body.age > 99 || req.body.age < 13) {
+            return res.status(500).send({
+                status: false,
+                message: 'Validation Error: Specified attribute is not between the expected ages of 13 and 99.',
+            });
+        }
         // When profile image's filetype changed, then should change token information
         User.findOneAndUpdate({
             _id: req.body._id
@@ -90,8 +90,11 @@ module.exports = (app) => {
                 (err, token) => {
                     if (err) {
                         console.log('Failed to create token', err);
+                        return res.status(500).send({
+                            status: false,
+                            message: 'Error: Server error.',
+                        });
                     } else {
-                        console.log(token);
                         return res.status(200).send({
                             status: true,
                             message: "Updated profile successfully",

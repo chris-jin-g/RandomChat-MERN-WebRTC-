@@ -10,6 +10,11 @@ import {
     MDBCloseIcon
   } from 'mdbreact';
 
+import {
+    NotificationContainer,
+    NotificationManager
+} from "react-notifications";
+import jwt_decode from "jwt-decode";
 import { RESTAPIUrl } from '../../config/config';
 import { setInStorage } from "../../utils/storage";
 import { countries } from "../../config/country";
@@ -46,7 +51,6 @@ export default class ChatBox extends Component {
         const data = new FormData();
         data.append('file', this.uploadInput.files[0]);
         data.append('fileName', this.fileName.value);
-        console.log("upload file name", this.fileName.value);
         
         fetch(`${RESTAPIUrl}/api/profile/image`, {
           method: 'POST',
@@ -54,14 +58,19 @@ export default class ChatBox extends Component {
         })
         .then(res =>res.json())
         .then(json => {
-            console.log('this is json object', json);
             if(json.status) {
                 setInStorage('guest_signin', {token:json.token});
                 this.props.updateProfile();
-                this.setState({imageHash: Date.now()});
-                // let decoded_token = jwt_decode(json.token);
-                // let signedInUser = decoded_token.user;
-                // this.props.onChangeProfile(signedInUser);       
+
+                // this.setState({imageHash: Date.now()});
+
+                let decoded_token = jwt_decode(json.token);
+                let signedInUser = decoded_token.user;
+                // this.props.onChangeProfile(signedInUser);
+                this.setState({
+                    imageURL: `${RESTAPIUrl}/public/profile/${signedInUser.profile_image}`,
+                    imageHash: Date.now()
+                });    
             } else {
                 alert("Server Error");
             }
@@ -77,7 +86,6 @@ export default class ChatBox extends Component {
 
     handleChangeProfile(e) {
         e.preventDefault();
-        console.log("profile update setting", this.props.profileInfo);
         const { userName, location, age, gender } = this.state;
         const { _id } = this.props.profileInfo;
         this.setState ({ 
@@ -98,13 +106,17 @@ export default class ChatBox extends Component {
         }),
         }).then(res =>res.json())
         .then(json => {
-            console.log('this is json object', json);
             if(json.status) {
                 setInStorage('guest_signin', {token:json.token});
                 this.props.updateProfile();
                 this.props.onProfileModalShow(false);
+                NotificationManager.success(
+                    `${json.message}`
+                );
             } else {
-                alert("Server Error");
+                NotificationManager.error(
+                    `${json.message}`
+                );
             }
         });
     }
@@ -132,7 +144,8 @@ export default class ChatBox extends Component {
     render() {
         return (
             <div>
-                <MDBRow className='mt-5' className={this.props.profileContainer}>
+                <NotificationContainer /> 
+                <MDBRow className={`${this.props.profileContainer}`}>
                     <MDBCol>
                         <MDBCloseIcon onClick={this.onProfileModalShow.bind(this)}/>
                         <MDBJumbotron className='text-center'>                          

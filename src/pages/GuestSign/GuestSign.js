@@ -1,6 +1,10 @@
 import React from 'react';
 import { MDBRow, MDBCol, MDBInput, MDBBtn, MDBCard, MDBCardBody, MDBModalFooter, MDBInputSelect } from 'mdbreact';
 import 'whatwg-fetch';
+import {
+  NotificationContainer,
+  NotificationManager
+} from "react-notifications";
 import { setInStorage } from '../../utils/storage';
 import { RESTAPIUrl } from '../../config/config';
 import { countries } from "../../config/country";
@@ -39,14 +43,9 @@ class GuestSign extends React.Component {
   handleChangeGender(e) {
     this.setState({ gender: e.target.value });
   }
-
-  componentWillUpdate(){
-    console.log(this.state);
-  }
   
   handleSubmit(event) {
     event.preventDefault();
-    console.log("form submitted")
     const { userName, location, age, gender } = this.state;
     
     this.setState ({ 
@@ -66,18 +65,20 @@ class GuestSign extends React.Component {
       }),
     }).then(res =>res.json())
       .then(json => {
-        console.log('this is json object', json);
         if(json.status) {
           setInStorage('guest_signin', {token:json.token});
           this.props.history.push("/chat");
         } else {
-          alert("Server Error");
+          NotificationManager.error(
+            `${json.message}`
+          );
         }
       })
   }
   render() {
     return (
         <MDBRow>
+          <NotificationContainer /> 
           <MDBCol sm="10" md="7" lg="6" xl="4" className="mx-auto mt-3 sign-container">
             <form onSubmit={this.handleSubmit}>
               <MDBCard>

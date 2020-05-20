@@ -15,29 +15,6 @@ const fakeAuth = () => {
   const obj = getFromStorage('guest_signin');
   
   if(obj && obj.token) {
-    
-    // fetch(RESTAPIUrl + '/api/guest/signin', {
-    //   method: 'POST',
-    //   headers: {
-    //     'Content-Type': 'application/json'
-    //   },
-    //   body: JSON.stringify({
-    //     userName,
-    //     location,
-    //     age,
-    //     gender
-    //   }),
-    // }).then(res =>res.json())
-    //   .then(json => {
-    //     console.log('this is json object', json);
-    //     if(json.status) {
-    //       setInStorage('guest_signin', {token:json.token});
-    //       this.props.history.push("/chat");
-    //     } else {
-    //       alert("Server Error");
-    //     }
-    //   })
-
     return true;
   }
   return false;
