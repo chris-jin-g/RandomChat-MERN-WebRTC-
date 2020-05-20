@@ -224,10 +224,10 @@ module.exports = (app) => {
 
     app.post('/api/guest/signin', (req, res, next) => {
         // Get the client's IP Address
-        // var ip_address = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-        // ip_address = ip_address.substr(ip_address.lastIndexOf(":") + 1);
+        var ip_address = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+        ip_address = ip_address.substr(ip_address.lastIndexOf(":") + 1);
 
-        var ip_address = randomip('192.168.2.0', 24);
+        // var ip_address = randomip('192.168.2.0', 24);
 
         const { userName, age, gender, location } = req.body;
 
@@ -294,7 +294,6 @@ module.exports = (app) => {
                 }
                 // Create new user with client's ip address
                 else {
-                    console.log("new user sign in ")
                     const newUser = new User();
 
                     newUser.userName = userName;
