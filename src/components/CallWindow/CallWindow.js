@@ -85,7 +85,8 @@ export default class CallWindow extends Component {
 
     }
 
-    componentDidUpdate() {
+    componentDidMount() {
+      console.log("video call started");
       if (this.peerVideo.current && this.props.peerSrc) this.peerVideo.current.srcObject = this.props.peerSrc;
       if (this.localVideo.current && this.props.localSrc) this.localVideo.current.srcObject = this.props.localSrc;
       
