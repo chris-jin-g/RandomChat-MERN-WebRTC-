@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, Component } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import "./CallWindow.css";
@@ -97,11 +97,11 @@ export default class CallWindow extends Component {
 
     toggleMediaDevice(deviceType) {
       if (deviceType === 'video') {
-        this.setState({video:!video});
+        this.setState({video:!this.state.video});
         this.props.mediaDevice.toggle('Video');
       }
       if (deviceType === 'audio') {
-        this.setState({audio:!audio});
+        this.setState({audio:!this.state.audio});
         this.props.mediaDevice.toggle('Audio');
       }
     };
@@ -111,26 +111,26 @@ export default class CallWindow extends Component {
 
     render() {
       return (
-        <div className={classnames('call-window', status)}>
+        <div className={classnames('call-window', this.props.status)}>
           <div className="video-contact">
-            <video id="peerVideo" ref={peerVideo} autoPlay />
+            <video id="peerVideo" ref={(ref) => { this.peerVideo = ref; }} autoPlay />
           </div>
     
           <div className="video-user">
-            <video id="localVideo" ref={localVideo} autoPlay muted />  
+            <video id="localVideo" ref={(ref) => { this.localVideo = ref; }} autoPlay muted />  
           </div>      
           
           <div className="video-control">
             <button
               key="btnVideo"
               type="button"
-              className={getButtonClass('fa-video', video)}
+              className={getButtonClass('fa-video', this.state.video)}
               onClick={() => this.toggleMediaDevice.bind(this, 'video')}
             />
             <button
               key="btnAudio"
               type="button"
-              className={getButtonClass('fa-microphone', audio)}
+              className={getButtonClass('fa-microphone', this.state.audio)}
               onClick={() => this.toggleMediaDevice.bind(this, 'audio')}
             />
             <button
