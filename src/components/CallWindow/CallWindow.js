@@ -7,6 +7,7 @@ const getButtonClass = (icon, enabled) => classnames(`btn-action fa ${icon}`, { 
 
 function CallWindow({ peerSrc, localSrc, config, mediaDevice, status, endCall }) {
   const peerVideo = useRef(null);
+  console.log("Local and PeerVideo started");
   const localVideo = useRef(null);
   const [video, setVideo] = useState(config.video);
   const [audio, setAudio] = useState(config.audio);
@@ -14,14 +15,14 @@ function CallWindow({ peerSrc, localSrc, config, mediaDevice, status, endCall })
   useEffect(() => {
     if (peerVideo.current && peerSrc) peerVideo.current.srcObject = peerSrc;
     if (localVideo.current && localSrc) localVideo.current.srcObject = localSrc;
-  }, [peerVideo, localVideo]);
+  });
 
   useEffect(() => {
     if (mediaDevice) {
       mediaDevice.toggle('Video', video);
       mediaDevice.toggle('Audio', audio);
     }
-  }, [mediaDevice]);
+  });
 
   /**
    * Turn on/off a media device
