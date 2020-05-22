@@ -719,9 +719,9 @@ class App extends Component {
 
         {!_.isEmpty(this.state.config) && (
           <CallWindow
-            status={callWindow}
-            localSrc={localSrc}
-            peerSrc={peerSrc}
+            status={this.state.callWindow}
+            localSrc={this.state.localSrc}
+            peerSrc={this.state.peerSrc}
             config={this.state.config}
             mediaDevice={this.pc.mediaDevice}
             endCall={this.endCallHandler}

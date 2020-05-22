@@ -384,7 +384,7 @@ export default class ChatBox extends Component {
                       <Editor
                         ref={this.setDomEditorRef}
                         editorState={this.state.editorState}
-                        placeholder="Type a message..."
+                        placeholder="Type a message...123"
                         wrapperClassName="demo-wrapper"
                         toolbarClassName={this.state.toolbar_show ? '' : 'toggle-toolbar'}
                         editorClassName="demo-editor"
