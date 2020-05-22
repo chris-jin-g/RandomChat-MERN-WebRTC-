@@ -7,7 +7,7 @@ const getButtonClass = (icon, enabled) => classnames(`btn-action fa ${icon}`, { 
 
 function CallWindow({ peerSrc, localSrc, config, mediaDevice, status, endCall }) {
   const peerVideo = useRef(null);
-  console.log("Local and PeerVideo started");
+  
   const localVideo = useRef(null);
   const [video, setVideo] = useState(config.video);
   const [audio, setAudio] = useState(config.audio);
@@ -41,6 +41,7 @@ function CallWindow({ peerSrc, localSrc, config, mediaDevice, status, endCall })
 
   return (
     <div className={classnames('call-window', status)}>
+      {console.log("Local and PeerVideo started", this.props)}
       <div className="video-contact">
         <video id="peerVideo" ref={peerVideo} autoPlay />
       </div>
