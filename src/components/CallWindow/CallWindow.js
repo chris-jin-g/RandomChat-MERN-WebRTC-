@@ -83,8 +83,8 @@ export default class CallWindow extends Component {
             audio: this.props.config.audio
         }
 
-        this.peerVideo = React.createRef();
-        this.localVideo = React.createRef();
+        // this.peerVideo = React.createRef();
+        // this.localVideo = React.createRef();
 
     }
 
