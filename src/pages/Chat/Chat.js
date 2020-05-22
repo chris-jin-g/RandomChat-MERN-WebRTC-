@@ -267,7 +267,6 @@ class App extends Component {
   }
 
   onFindTargetUser(targetUser) {
-    this.endCall(false);
     // Add current target user to black user list
     let blackUsersList = this.state.blackUsersList;
     blackUsersList.push(targetUser._id);
@@ -302,7 +301,6 @@ class App extends Component {
   }
 
   onSearchNone() {
-    this.endCall(false);
     NotificationManager.error(
       `Sorry your search did not have any results. Please widen your search`
     );
@@ -311,7 +309,6 @@ class App extends Component {
   }
 
   onAvailableNone() {
-    this.endCall(false);
     console.log("already contacted with all users");
     NotificationManager.error(
       `You have already contacted with all online users. Try search again`
@@ -321,7 +318,6 @@ class App extends Component {
   }
   
   onIgnore() {
-    this.endCall(false);
     // console.log("You are ignored from", this.state.targetUser);
     // Ignored Message handling
     this.setState({targetUser: ''});
@@ -565,7 +561,6 @@ class App extends Component {
   }
 
   onTargetDisconnect() {
-    this.endCall(false);
     if(this.state.targetUser !== '' || typeof this.state.targetUser.userName !== 'undefined') {
       NotificationManager.error(
         `${this.state.targetUser.userName} disconnected from this chat room.`
@@ -595,7 +590,6 @@ class App extends Component {
   }
 
   logOut() {
-    this.endCall(false);
     this.socket.emit('log-out', signedInUser);
   }
 
@@ -605,7 +599,6 @@ class App extends Component {
   }
 
   onTargetLogout() {
-    this.endCall(false);
     NotificationManager.error(
       `${this.state.targetUser.userName} log out.`
     );
