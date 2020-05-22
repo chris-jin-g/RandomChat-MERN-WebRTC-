@@ -41,7 +41,7 @@ function CallWindow({ peerSrc, localSrc, config, mediaDevice, status, endCall })
 
   return (
     <div className={classnames('call-window', status)}>
-      {console.log("Local and PeerVideo started")}
+      {console.log("Local and PeerVideo started", peerSrc, localSrc, config, mediaDevice, status, endCall)}
       <div className="video-contact">
         <video id="peerVideo" ref={peerVideo} autoPlay />
       </div>
