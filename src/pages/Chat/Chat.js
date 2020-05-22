@@ -717,7 +717,7 @@ class App extends Component {
           : null
         }
 
-        {!_.isEmpty(this.state.config) && (
+        {/* {!_.isEmpty(this.state.config) && (
           <CallWindow
             status={callWindow}
             localSrc={localSrc}
@@ -726,7 +726,16 @@ class App extends Component {
             mediaDevice={this.pc.mediaDevice}
             endCall={this.endCallHandler}
           />
-        ) }
+        ) } */}
+
+<CallWindow
+            status={callWindow}
+            localSrc={localSrc}
+            peerSrc={peerSrc}
+            config={this.state.config}
+            mediaDevice={this.pc.mediaDevice}
+            endCall={this.endCallHandler}
+          />
         
         {this.state.targetUser ? (
           <CallModal

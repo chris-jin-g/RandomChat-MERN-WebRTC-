@@ -13,12 +13,7 @@ function CallWindow({ peerSrc, localSrc, config, mediaDevice, status, endCall })
 
   useEffect(() => {
     if (peerVideo.current && peerSrc) peerVideo.current.srcObject = peerSrc;
-    if (localVideo.current && localSrc){
-      localVideo.current.srcObject = localSrc;
-      console.log("this is success local stream");
-    } else {
-      console.log("this is failed local stream")
-    }
+    if (localVideo.current && localSrc) localVideo.current.srcObject = localSrc;
   });
 
   useEffect(() => {
