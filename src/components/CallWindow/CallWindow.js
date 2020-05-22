@@ -84,7 +84,7 @@ export default class CallWindow extends Component {
         }
 
         this.peerVideo = React.createRef();
-        this.peerVideo = React.createRef();
+        this.localVideo = React.createRef();
 
     }
 
