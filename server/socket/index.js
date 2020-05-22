@@ -289,16 +289,16 @@ function initSocket(client) {
         client.to(data.to).emit('call', {...data, from: id });
     })
     client.on('end', (data) => {
-        // const receiver = users.get(data.to);
-        // if (receiver) {
-        //     receiver.emit('end');
-        // }
-        client.to(data.to).emit('end');
-    })
-    client.on('disconnect', () => {
-        // users.remove(id);
-        console.log(id, 'disconnected');
-    });
+            // const receiver = users.get(data.to);
+            // if (receiver) {
+            //     receiver.emit('end');
+            // }
+            client.to(data.to).emit('end');
+        })
+        // client.on('disconnect', () => {
+        //     // users.remove(id);
+        //     console.log(id, 'disconnected');
+        // });
 }
 
 module.exports = (client) => {

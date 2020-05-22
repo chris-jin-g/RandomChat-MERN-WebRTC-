@@ -93,14 +93,16 @@ class App extends Component {
       callModal: '',
       callFrom: '',
       localSrc: null,
-      peerSrc: null
+      peerSrc: null,
+
+      config: null,
     
     };
 
 
     // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
     this.pc = {};
-    this.config = null;
+    // this.config = null;
     this.startCallHandler = this.startCall.bind(this);
     this.endCallHandler = this.endCall.bind(this);
     this.rejectCallHandler = this.rejectCall.bind(this);
@@ -116,7 +118,7 @@ class App extends Component {
 
   componentDidMount() {
     this.verifyAccount();
-    this.initAxios();
+    // this.initAxios();
     this.initSocketConnection();
     this.createSocketRoom();
     this.setupSocketListeners();
@@ -442,6 +444,7 @@ class App extends Component {
 
     // Scroll to bottom when receiving the new message
     var element = document.querySelector('[class="rce-mlist"]');
+    console.log("this is element error", element,"type", typeof element);
     element.scrollTop = element.scrollHeight;
   }
   /**
@@ -558,7 +561,7 @@ class App extends Component {
   }
 
   onTargetDisconnect() {
-    if(this.state.targetUser !== '' ) {
+    if(this.state.targetUser !== '' || typeof this.state.targetUser.userName !== 'undefined') {
       NotificationManager.error(
         `${this.state.targetUser.userName} disconnected from this chat room.`
       );
@@ -614,7 +617,8 @@ class App extends Component {
   // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
   startCall(isCaller, targetUserID, config) {
     console.log("call start now ", isCaller, targetUserID, config)
-    this.config = config;
+    // this.config = config;
+    this.setState({config});
     this.pc = new PeerConnection(targetUserID)
       .on('localStream', (src) => {
         const newState = { callWindow: 'active', localSrc: src };
@@ -636,12 +640,13 @@ class App extends Component {
       this.pc.stop(isStarter);
     }
     this.pc = {};
-    this.config = null;
+    // this.config = null;
     this.setState({
       callWindow: '',
       callModal: '',
       localSrc: null,
-      peerSrc: null
+      peerSrc: null,
+      config: null
     });
   }
   
@@ -712,12 +717,12 @@ class App extends Component {
           : null
         }
 
-        {!_.isEmpty(this.config) && (
+        {!_.isEmpty(this.state.config) && (
           <CallWindow
             status={callWindow}
             localSrc={localSrc}
             peerSrc={peerSrc}
-            config={this.config}
+            config={this.state.config}
             mediaDevice={this.pc.mediaDevice}
             endCall={this.endCallHandler}
           />

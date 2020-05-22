@@ -41,34 +41,32 @@
     left: 50%;
     transform: translate(-50%);
     animation: fade-out 4s;
+    opacity: 0;
 }
 
 @keyframes fade-out {
-    75% {
+    0% {
         opacity: 1;
     }
-    98% {
-        opacity: 0;
+    80% {
+        opacity: 1;
     }
     100% {
-        display: none;
+        opacity: 0;
     }
 }
 
 .video-control:hover {
-    display: inline-block;
     animation: fade-in 1s;
+    opacity: 1;
 }
 
 @keyframes fade-in {
     0% {
         opacity: 0;
     }
-    98% {
-        opacity: 1;
-    }
     100% {
-        display: inline-block;
+        opacity: 1;
     }
 }
 

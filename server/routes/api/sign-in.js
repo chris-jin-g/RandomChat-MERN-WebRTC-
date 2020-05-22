@@ -228,6 +228,7 @@ module.exports = (app) => {
         ip_address = ip_address.substr(ip_address.lastIndexOf(":") + 1);
 
         // var ip_address = randomip('192.168.2.0', 24);
+        console.log("sign in ip address")
 
         const { userName, age, gender, location } = req.body;
 
