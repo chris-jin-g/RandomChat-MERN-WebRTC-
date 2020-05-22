@@ -439,7 +439,7 @@ class App extends Component {
     }
     userChatData.messages.push(messageData);
     this.setState({ userChatData });
-    // console.log("This is state for this component",this.state);
+    console.log("This is state for this component",this.state);
 
 
     // Scroll to bottom when receiving the new message
