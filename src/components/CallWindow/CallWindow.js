@@ -11,10 +11,10 @@ function CallWindow({ peerSrc, localSrc, config, mediaDevice, status, endCall })
   const [video, setVideo] = useState(config.video);
   const [audio, setAudio] = useState(config.audio);
 
-  // useEffect(() => {
-  //   if (peerVideo.current && peerSrc) peerVideo.current.srcObject = peerSrc;
-  //   if (localVideo.current && localSrc) localVideo.current.srcObject = localSrc;
-  // });
+  useEffect(() => {
+    if (peerVideo.current && peerSrc) peerVideo.current.srcObject = peerSrc;
+    if (localVideo.current && localSrc) localVideo.current.srcObject = localSrc;
+  });
 
   // useEffect(() => {
   //   if (mediaDevice) {
@@ -46,7 +46,7 @@ function CallWindow({ peerSrc, localSrc, config, mediaDevice, status, endCall })
 
       <div className="video-user">
         <video id="localVideo" ref={localVideo} autoPlay muted />  
-      </div>      
+      </div>  
       
       <div className="video-control">
         <button
