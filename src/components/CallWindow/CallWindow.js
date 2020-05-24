@@ -12,11 +12,13 @@ function CallWindow({ peerSrc, localSrc, config, mediaDevice, status, endCall })
   const [audio, setAudio] = useState(config.audio);
 
   useEffect(() => {
+    console.log("user effect1 called")
     if (peerVideo.current && peerSrc) peerVideo.current.srcObject = peerSrc;
     if (localVideo.current && localSrc) localVideo.current.srcObject = localSrc;
-  });
+  },[peerSrc, localSrc]);
 
   useEffect(() => {
+    console.log("use effect 2 called")
     if (mediaDevice) {
       mediaDevice.toggle('Video', video);
       mediaDevice.toggle('Audio', audio);
