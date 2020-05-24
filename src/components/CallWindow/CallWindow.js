@@ -85,10 +85,21 @@ export default class CallWindow extends Component {
 
         // this.peerVideo = React.createRef();
         // this.localVideo = React.createRef();
+        
 
     }
 
     componentDidMount() {
+      console.log("video call started");
+      if (this.peerVideo.current && this.props.peerSrc) this.peerVideo.current.srcObject = this.props.peerSrc;
+      if (this.localVideo.current && this.props.localSrc) this.localVideo.current.srcObject = this.props.localSrc;
+      
+      if (this.props.mediaDevice) {
+        this.props.mediaDevice.toggle('Video', this.state.video);
+        this.props.mediaDevice.toggle('Audio', this.state.audio);
+      }
+    }
+    componentDidUpdate() {
       console.log("video call started");
       if (this.peerVideo.current && this.props.peerSrc) this.peerVideo.current.srcObject = this.props.peerSrc;
       if (this.localVideo.current && this.props.localSrc) this.localVideo.current.srcObject = this.props.localSrc;
