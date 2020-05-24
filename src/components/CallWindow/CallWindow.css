@@ -94,6 +94,32 @@ button.hangup {
     transition-duration: .25s;
 }
 
+.toggle-contact-video {
+    position: absolute;
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    background-color: rgba(23, 35, 34, .75);
+}
+
+.max-mark {
+    top: 3px;
+    right: 3px;
+}
+
+.min-mark {
+    bottom: 5px;
+    left: 0px;
+}
+
+.max-video {
+    display: block;
+}
+
+.min-video {
+    display: none;
+}
+
 @media only screen and (max-width: 768px) {
     .video-user {
         right: 47px;

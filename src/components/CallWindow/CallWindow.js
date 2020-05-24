@@ -47,9 +47,10 @@ function CallWindow({ peerSrc, localSrc, config, mediaDevice, status, endCall })
   return (
     <div className={classnames('call-window', status)}>
       <div className="video-contact">
-        <video id="peerVideo" ref={peerVideo} autoPlay />
+        <video id="peerVideo" className={`${toggleVideo? 'max-video':'min-video'}`} ref={peerVideo} autoPlay />
+
         <div 
-          className="toggle-contact-video" 
+          className={`toggle-contact-video ${toggleVideo? 'max-mark':'min-mark'}`}
           onClick={() => toggleVideoContact()}
         >
           <img src={`${RESTAPIUrl}/public/${toggleVideo? 'min' : 'max'}.png`}></img>
