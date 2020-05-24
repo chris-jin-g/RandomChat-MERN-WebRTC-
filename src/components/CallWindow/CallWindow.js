@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
+import { RESTAPIUrl } from "../../config/config";
 import "./CallWindow.css";
 
 const getButtonClass = (icon, enabled) => classnames(`btn-action fa ${icon}`, { disable: !enabled });
@@ -10,15 +11,14 @@ function CallWindow({ peerSrc, localSrc, config, mediaDevice, status, endCall })
   const localVideo = useRef(null);
   const [video, setVideo] = useState(config.video);
   const [audio, setAudio] = useState(config.audio);
+  const [ toggleVideo, setToggleVideo ] = useState(true);
 
   useEffect(() => {
-    console.log("user effect1 called")
     if (peerVideo.current && peerSrc) peerVideo.current.srcObject = peerSrc;
     if (localVideo.current && localSrc) localVideo.current.srcObject = localSrc;
   },[peerSrc, localSrc]);
 
   useEffect(() => {
-    console.log("use effect 2 called")
     if (mediaDevice) {
       mediaDevice.toggle('Video', video);
       mediaDevice.toggle('Audio', audio);
@@ -40,14 +40,24 @@ function CallWindow({ peerSrc, localSrc, config, mediaDevice, status, endCall })
     }
   };
 
+  const toggleVideoContact = () => {
+    setToggleVideo(!toggleVideo);
+  }
+
   return (
     <div className={classnames('call-window', status)}>
       <div className="video-contact">
         <video id="peerVideo" ref={peerVideo} autoPlay />
+        <div 
+          className="toggle-contact-video" 
+          onClick={() => toggleVideoContact()}
+        >
+          <img src={`${RESTAPIUrl}/public/${toggleVideo? 'min' : 'max'}.png`}></img>
+        </div>
       </div>
 
       <div className="video-user">
-        <video id="localVideo" ref={localVideo} autoPlay muted />  
+        <video id="localVideo" ref={localVideo} autoPlay muted />        
       </div>      
       
       <div className="video-control">
