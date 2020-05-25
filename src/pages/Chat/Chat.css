@@ -34,7 +34,7 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        font-family: "Source Sans Pro";
+        font-family: "Roboto", sans-serif
     }
     
     .waiting-container .title-box h2 {
@@ -218,7 +218,7 @@
         justify-content: center;
         margin-left: 1rem;
         margin-bottom: 0;
-        font-family: Archivo, sans-serif;
+        font-family: "Roboto", sans-serif
     }
     
     .user-info p.user-name {

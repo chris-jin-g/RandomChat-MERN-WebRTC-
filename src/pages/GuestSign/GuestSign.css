@@ -4,6 +4,14 @@
     margin-bottom: 30px;
 }
 
+.sign-title img {
+    width: 120px;
+    padding: 15px;
+    border: 2px solid white;
+    border-radius: 50%;
+    margin: 10px;
+}
+
 .sign-title h5 {
     padding: 20px;
     margin-bottom: 0px !important;
@@ -54,7 +62,7 @@ select {
 }
 
 .react-numeric-input {
-    margin-bottom: 1.5rem;
+    margin-bottom: 0rem;
 }
 
 .radio-group {
@@ -67,9 +75,40 @@ select {
     border: none !important;
 }
 
+.sign-wrapper {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    background-image: url('/sign-bg.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: center;
+    margin-right: 0px;
+    margin-left: 0px;
+}
+
 .sign-container {
     position: absolute;
     left: 50%;
-    top: 40%;
+    top: 50%;
     transform: translate(-50%, -50%);
+    margin-top: 0px !important;
+    width: 360px;
+    height: 600px;
+    shape-outside: ellipse(20% 50%);
+    clip-path: ellipse(45% 50%);
+    margin: 0 auto !important;
+}
+
+.sign-btn-group {
+    display: flex;
+    justify-content: center;
+}
+
+.sign-btn-group button {
+    width: 120px;
+    padding: 0px;
 }

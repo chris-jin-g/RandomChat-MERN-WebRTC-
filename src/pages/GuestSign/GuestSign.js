@@ -77,13 +77,14 @@ class GuestSign extends React.Component {
   }
   render() {
     return (
-        <MDBRow>
-          <NotificationContainer /> 
+        <MDBRow className="sign-wrapper">
+          <NotificationContainer />
           <MDBCol sm="10" md="7" lg="6" xl="4" className="mx-auto mt-3 sign-container">
             <form onSubmit={this.handleSubmit}>
               <MDBCard>
               <div className="text-center sign-title">
-                <h5 className="dark-grey-text mb-5"><strong>Sign in</strong></h5>
+                {/* <img src={`${RESTAPIUrl}/public/chat-icon.png`} alt="chat-icon"></img> */}
+                <img src={`http://localhost:3000/chat-icon.png`} alt="chat-icon"></img>
               </div>
               <MDBCardBody className="mx-4">
                 
@@ -114,7 +115,7 @@ class GuestSign extends React.Component {
                   </div>  
                 </div>
 
-                <div className="text-center pt-3 mb-3">
+                <div className="text-center pt-3 mb-3 sign-btn-group">
                   <MDBBtn 
                     type="submit" 
                     className="btn-block z-depth-1a" 
