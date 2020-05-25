@@ -34,7 +34,11 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        font-family: Georgia;
+        font-family: "Segoe UI", Arial, sans-serif;
+    }
+    
+    .waiting-container .title-box h2 {
+        font-weight: 400;
     }
     
     .title-box h2 {
@@ -214,7 +218,7 @@
         justify-content: center;
         margin-left: 1rem;
         margin-bottom: 0;
-        font-family: "Times New Roman";
+        font-family: Archivo, sans-serif;
     }
     
     .user-info p.user-name {

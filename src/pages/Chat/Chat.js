@@ -257,7 +257,12 @@ class App extends Component {
       userChatData: {}
     },() => {
       this.socket.emit('confirm_remove_old_session', this.state.signedInUser); 
-    });       
+    });
+
+    // After 5s, old sessions automatically remove.
+    this.onRemoveOldSessionTimeout = setTimeout(() => {
+      this.onConfirmRemoveOldSession();
+    }, 5000);      
   }
 
   onConfirmRemoveOldSession() {
