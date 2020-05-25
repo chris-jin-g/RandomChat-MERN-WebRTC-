@@ -94,6 +94,10 @@ button.hangup {
     transition-duration: .25s;
 }
 
+.video-contact:hover .toggle-contact-video {
+    display: block;
+}
+
 .toggle-contact-video {
     position: absolute;
     width: 25px;
@@ -101,6 +105,7 @@ button.hangup {
     border-radius: 50%;
     background-color: rgba(23, 35, 34, .75);
     cursor: pointer;
+    display: none;
 }
 
 .toggle-contact-video:hover {

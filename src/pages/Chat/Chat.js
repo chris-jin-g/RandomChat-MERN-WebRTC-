@@ -246,6 +246,11 @@ class App extends Component {
         prevTargetUser: this.state.targetUser,
     };
     this.socket.emit("find_target", findTargetQuery);
+
+    if(this.state.targetUser._id !== 'undefined'){
+      this.socket.emit('end', { to: this.state.targetUser._id });
+    }    
+    this.setState({ callModal: '' });
   }
 
   onRemoveOldSession() {
@@ -318,6 +323,10 @@ class App extends Component {
   }
   
   onIgnore() {
+    if(this.state.targetUser._id !== 'undefined'){
+      this.socket.emit('end', { to: this.state.targetUser._id });
+    }    
+    this.setState({ callModal: '' });
     // console.log("You are ignored from", this.state.targetUser);
     // Ignored Message handling
     this.setState({targetUser: ''});
@@ -379,7 +388,6 @@ class App extends Component {
   }
 
   onMessageRecieved(message) {
-      // console.log("this is message response", message);
     var userChatData = this.state.userChatData;    
     var messageData = message.message;
     var messageDataText = messageData.text;
@@ -388,13 +396,13 @@ class App extends Component {
       return false;
       
     // Handling emoji icon string
-    let regexp = /:[\w]+[_]?[-]?[+]*[\w]+:/g;
+    // let regexp = /:[\w]+[_]?[-]?[+]*[\w]+:/g;
+    let regexp = /:[\w]*[_]?[-]?[+]*[\w]*[_]?[-]?[+]*[\w]*[_]?[-]?[+]*[\w]*[_]?[-]?[+]*[\w]*[_]?[-]?[+]*[\w]*[_]?[-]?[+]*[\w]+:/g;
     let str = messageData.text;
 
     let array = [...str.matchAll(regexp)];
-
     for(let i = 0 ; i < array.length ; i++)  {
-      let emojiComp = document.querySelector('[title=' + String(array[i]).split(":").join("") +']');
+      let emojiComp = document.querySelector(`button[title=  '${String(array[i]).split(':').join('')}' ]`);
       let emojiHtml = emojiComp.innerHTML;
       messageDataText = messageDataText.replace(String(array[i]), String(emojiHtml));
     }
@@ -407,7 +415,7 @@ class App extends Component {
       messageData.position = "right";
       messageData.renderAddCmp = () => { return renderHtml(`<div className="message-text message-text-right">${messageDataText}</div>`)};
       // targetId = message.to;
-    //   messageData.avatar = `${process.env.REACT_APP_SERVER_URI}/avatar/${this.state.user.id}.jpg`;
+      //   messageData.avatar = `${process.env.REACT_APP_SERVER_URI}/avatar/${this.state.user.id}.jpg`;
       messageData.avatar = `${RESTAPIUrl}/public/profile/${this.state.signedInUser.profile_image}`;
     } else {
       messageData.position = "left";      
@@ -419,6 +427,7 @@ class App extends Component {
     // let targetIndex = userChatData.findIndex(u => u.id === targetId);
     // messageData.renderAddCamp = this.customeRenderAddCamp;
     messageData.alert = false;
+    messageData.date = new Date();
     if (!userChatData.messages) {
       userChatData.messages = [];
     } else {
@@ -439,13 +448,16 @@ class App extends Component {
     }
     userChatData.messages.push(messageData);
     this.setState({ userChatData });
-    console.log("This is state for this component",this.state);
+    // console.log("This is state for this component",this.state);
 
 
     // Scroll to bottom when receiving the new message
     var element = document.querySelector('[class="rce-mlist"]');
     console.log("this is element error", element,"type", typeof element);
-    element.scrollTop = element.scrollHeight;
+    if(element !== null){
+      element.scrollTop = element.scrollHeight;
+    }
+    
   }
   /**
    *
@@ -546,7 +558,7 @@ class App extends Component {
         userChatData.messages.push(messageData);
         this.setState({ userChatData });
         
-        this.turnOffRedTimeout = setTimeout(() => {
+        this.turnOffNoExistTimeout = setTimeout(() => {
           userChatData = this.state.userChatData;
           if(userChatData.messages[userChatData.messages.length-1].alert === true) {
             userChatData.messages.pop();
@@ -554,6 +566,20 @@ class App extends Component {
           }          
         }, 2000);
       } else {
+        if(messages[messages.length-1].alert == true) {
+          this.setState({userChatData: this.state.userChatData});
+          
+          clearTimeout(this.turnOffNoExistTimeout);
+          clearTimeout(this.turnOffExistTimeout);
+
+          this.turnOffExistTimeout = setTimeout(() => {
+            userChatData = this.state.userChatData;
+            if(userChatData.messages[userChatData.messages.length-1].alert === true) {
+              userChatData.messages.pop();
+              this.setState({ userChatData });
+            }          
+          }, 2000);
+        }
              
       }
     }
@@ -561,6 +587,11 @@ class App extends Component {
   }
 
   onTargetDisconnect() {
+    if(this.state.targetUser._id !== 'undefined'){
+      this.socket.emit('end', { to: this.state.targetUser._id });
+    }    
+    this.setState({ callModal: '' });
+
     if(this.state.targetUser !== '' || typeof this.state.targetUser.userName !== 'undefined') {
       NotificationManager.error(
         `${this.state.targetUser.userName} disconnected from this chat room.`
@@ -599,6 +630,11 @@ class App extends Component {
   }
 
   onTargetLogout() {
+    if(this.state.targetUser._id !== 'undefined'){
+      this.socket.emit('end', { to: this.state.targetUser._id });
+    }    
+    this.setState({ callModal: '' });
+    
     NotificationManager.error(
       `${this.state.targetUser.userName} log out.`
     );

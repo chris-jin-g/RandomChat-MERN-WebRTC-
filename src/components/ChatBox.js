@@ -11,7 +11,7 @@ import { MDBBtn ,MDBIcon, MDBDropdown, MDBDropdownToggle, MDBDropdownMenu, MDBDr
 
 // MDI icon import
 import Icon from '@mdi/react'
-import { mdiPhone, mdiVideoOutline, mdiDotsVertical } from '@mdi/js'
+import { mdiPhone, mdiVideoOutline, mdiDotsVertical, mdiConsoleNetworkOutline } from '@mdi/js'
 
 // Emoji icon module
 import { Picker } from 'emoji-mart';
@@ -64,18 +64,27 @@ export default class ChatBox extends Component {
     // this.setState({ messageText: "" });
     this.props.onSendClicked(draftToHtml(convertToRaw(this.state.editorState.getCurrentContent())));
     this.setState({editorState:EditorState.createEmpty()});
+
     this.domEditor.focusEditor();
-    // @@@@@@@@@@@@@@@@@@@@@@@
+    
+    document.onkeydown = function (e) {
+      e.preventDefault();
+      return false;
+    };
+    
     setTimeout(
       function() {
         const newState = toggleCustomInlineStyle(this.state.editorState, 'color', this.state.pickerColor);
         this.setState({
-          editorState: newState,
-          showColorPicker: false
+          editorState: newState
         });
+
+        document.onkeydown = function (e) {
+          return true;
+        };
       }
       .bind(this),
-      10
+      500
     );
   }
   
@@ -136,9 +145,39 @@ export default class ChatBox extends Component {
     });
   };
 
-  // onEditorChange() {
-  //   this.props.onTyping();
-  // }
+  onFocusEditor() {
+    document.onkeydown = function (e) {
+      e.preventDefault();
+      return false;
+    };
+
+    console.log("editor state focus")
+    
+    setTimeout(
+      function() {
+
+        const tempState = toggleCustomInlineStyle(this.state.editorState, 'color', 'RGB(0,0,1)');
+        this.setState({
+          editorState: tempState
+          
+        }, () => {
+          const newState = toggleCustomInlineStyle(this.state.editorState, 'color', this.state.pickerColor);
+          this.setState({
+            editorState: newState,
+            showColorPicker: false
+            
+          });
+
+          document.onkeydown = function (e) {
+            return true;
+          };
+        });        
+      }
+      .bind(this),
+      500
+    );
+  }
+
 
   toggle_toolbar() {   
     this.setState({toolbar_show: !this.state.toolbar_show});
@@ -148,6 +187,12 @@ export default class ChatBox extends Component {
 
     // Call onTyping function to let contact user typing status
     this.props.onTyping();
+
+    // Set original color state when editor state is empty
+    if ( event.key === 'Backspace') {
+      this.onFocusEditor();
+    }
+
     if (KeyBindingUtil.hasCommandModifier(event) && event.ctrlKey && event.key === 'Enter') {
       return getDefaultKeyBinding(event);
     }
@@ -195,6 +240,9 @@ export default class ChatBox extends Component {
         // Focus editor box after file select.
         this.domEditor.focusEditor();
 
+        // Reset File input 
+        this.attachFile.value='';
+
       }
     })
   }
@@ -210,24 +258,29 @@ export default class ChatBox extends Component {
   }
 
   onApplyColorPicker() {
-    // const newState = toggleCustomInlineStyle(this.state.editorState, 'color', rgbColor);
-    // this.setState({
-    //   editorState: newState, 
-    //   pickerColor: color.hex
-    // });
 
     this.domEditor.focusEditor();
-    setTimeout(
-      function() {
-        const newState = toggleCustomInlineStyle(this.state.editorState, 'color', this.state.pickerColor);
-        this.setState({
-          editorState: newState,
-          showColorPicker: false
-        });
-      }
-      .bind(this),
-      500
-    );
+    // document.onkeydown = function (e) {
+    //   console.log("apply color picker")
+    //   e.preventDefault();
+    //   return false;
+    // };
+    
+    // setTimeout(
+    //   function() {
+    //     const newState = toggleCustomInlineStyle(this.state.editorState, 'color', this.state.pickerColor);
+    //     this.setState({
+    //       editorState: newState,
+    //       showColorPicker: false
+    //     });
+
+    //     document.onkeydown = function (e) {
+    //       return true;
+    //     };
+    //   }
+    //   .bind(this),
+    //   500
+    // );
   }
   handleChangeComplete = (color) => {
     const rgbColor=`RGB(${color.rgb.r}, ${color.rgb.g}, ${color.rgb.b})`;
@@ -390,6 +443,7 @@ export default class ChatBox extends Component {
                         editorClassName="demo-editor"
                         keyBindingFn={this.keyBindingFunction.bind(this)}
                         onEditorStateChange={this.onEditorStateChange}
+                        onFocus={this.onFocusEditor.bind(this)}
                         // onChange={this.onEditorChange.bind(this)}
                         toolbar={{
                           options: ['inline', 'colorPicker', 'fontSize', 'fontFamily',],
