@@ -239,6 +239,7 @@ class App extends Component {
    * Get target user to chat
    */
   findTargetUser() {
+    this.endCall(false);
     let findTargetQuery = {
         blackUsersList: this.state.blackUsersList,
         searchSetting: this.state.searchSetting,
@@ -246,14 +247,10 @@ class App extends Component {
         prevTargetUser: this.state.targetUser,
     };
     this.socket.emit("find_target", findTargetQuery);
-
-    if(this.state.targetUser._id !== 'undefined'){
-      this.socket.emit('end', { to: this.state.targetUser._id });
-    }    
-    this.setState({ callModal: '' });
   }
 
   onRemoveOldSession() {
+    this.endCall(false);
     this.setState({
       confirmRemoveOldSession: true,
       targetUser: '',
@@ -323,10 +320,7 @@ class App extends Component {
   }
   
   onIgnore() {
-    if(this.state.targetUser._id !== 'undefined'){
-      this.socket.emit('end', { to: this.state.targetUser._id });
-    }    
-    this.setState({ callModal: '' });
+    this.endCall(false);
     // console.log("You are ignored from", this.state.targetUser);
     // Ignored Message handling
     this.setState({targetUser: ''});
@@ -587,11 +581,7 @@ class App extends Component {
   }
 
   onTargetDisconnect() {
-    if(this.state.targetUser._id !== 'undefined'){
-      this.socket.emit('end', { to: this.state.targetUser._id });
-    }    
-    this.setState({ callModal: '' });
-
+    this.endCall(false);
     if(this.state.targetUser !== '' || typeof this.state.targetUser.userName !== 'undefined') {
       NotificationManager.error(
         `${this.state.targetUser.userName} disconnected from this chat room.`
@@ -630,11 +620,7 @@ class App extends Component {
   }
 
   onTargetLogout() {
-    if(this.state.targetUser._id !== 'undefined'){
-      this.socket.emit('end', { to: this.state.targetUser._id });
-    }    
-    this.setState({ callModal: '' });
-    
+    this.endCall(false);
     NotificationManager.error(
       `${this.state.targetUser.userName} log out.`
     );
