@@ -83,8 +83,7 @@ class GuestSign extends React.Component {
             <form onSubmit={this.handleSubmit}>
               <MDBCard>
               <div className="text-center sign-title">
-                {/* <img src={`${RESTAPIUrl}/public/chat-icon.png`} alt="chat-icon"></img> */}
-                <img src={`http://localhost:3000/chat-icon.png`} alt="chat-icon"></img>
+                <img src={`${RESTAPIUrl}/public/chat-icon.png`} alt="chat-icon"></img>
               </div>
               <MDBCardBody className="mx-4">
                 
