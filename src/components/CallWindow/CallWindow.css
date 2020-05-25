@@ -94,6 +94,11 @@ button.hangup {
     transition-duration: .25s;
 }
 
+.btn-action:focus {
+    outline: none;
+    border: none;
+}
+
 .video-contact:hover .max-mark {
     display: block;
 }
